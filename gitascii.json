@@ -1,0 +1,136 @@
+{
+  "widgets": [
+    {
+      "widgetId": "codeweb-showcase-cards",
+      "name": "Codeweb-showcase-cards Widget",
+      "position": {
+        "x": 0,
+        "y": 276
+      },
+      "size": {
+        "width": 800,
+        "height": 220
+      },
+      "config": {
+        "animationType": "slide-right",
+        "animationPreviewKey": 11,
+        "animationDuration": 1000,
+        "staticMode": false
+      },
+      "locked": false,
+      "visible": true,
+      "zIndex": 2,
+      "instanceId": "widget_1790699959441_1"
+    },
+    {
+      "widgetId": "codeweb-retro-grid",
+      "name": "Codeweb-retro-grid Widget",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "size": {
+        "width": 800,
+        "height": 260
+      },
+      "config": {
+        "selectedTechs": [
+          "TypeScript",
+          "Next.js",
+          "React",
+          "TailwindCSS",
+          "Node.js",
+          "PostgreSQL",
+          "Docker"
+        ],
+        "technologies": [
+          "TypeScript",
+          "Next.js",
+          "React",
+          "TailwindCSS",
+          "Node.js",
+          "PostgreSQL",
+          "Docker"
+        ]
+      },
+      "locked": false,
+      "visible": true,
+      "zIndex": 3,
+      "instanceId": "widget_1790699959441_0"
+    },
+    {
+      "widgetId": "codeweb-social-badge",
+      "name": "Codeweb-social-badge Widget",
+      "position": {
+        "x": 0,
+        "y": 512
+      },
+      "size": {
+        "width": 800,
+        "height": 56
+      },
+      "config": {
+        "platforms": [
+          "medium",
+          "email",
+          "website",
+          "linkedin",
+          "repositories",
+          "twitch",
+          "instagram"
+        ],
+        "renderMode": "multi",
+        "showText": true,
+        "showIcons": true,
+        "staticMode": false,
+        "customTitle": "",
+        "label_medium": "",
+        "animSpeed": "14s",
+        "animationType": "none",
+        "animationPreviewKey": 3,
+        "lockAspectRatio": false
+      },
+      "locked": false,
+      "visible": true,
+      "zIndex": 4,
+      "instanceId": "widget_1790699959441_2"
+    },
+    {
+      "instanceId": "widget_1790700570547",
+      "widgetId": "terminal-info",
+      "name": "Terminal-info Widget",
+      "position": {
+        "x": 0,
+        "y": 584
+      },
+      "size": {
+        "width": 800,
+        "height": 280
+      },
+      "config": {
+        "headerColor": "#bd93f9",
+        "labelColor": "#ff79c6",
+        "dotColor": "#6272a4",
+        "valueColor": "#f8f8f2",
+        "statsValColor": "#8be9fd",
+        "dividerColor": "#44475a"
+      },
+      "locked": false,
+      "visible": true,
+      "zIndex": 5
+    }
+  ],
+  "globalStyles": {
+    "backgroundColor": "#0a0a14",
+    "textColor": "#d6e0f0",
+    "accentColor": "#6cc382",
+    "borderColor": "#1e1e38",
+    "fontFamily": "'JetBrains Mono', monospace",
+    "borderRadius": 0,
+    "padding": 24,
+    "themeMode": "dark",
+    "templateStyle": "codeweb",
+    "transparentBackground": true
+  },
+  "templateId": "codeweb"
+}
