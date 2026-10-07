@@ -30,7 +30,7 @@ export default function App() {
   const [cursorActive, setCursorActive] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  // References for Danilo De Marco exact sequence
+  // References for Hero Scroll Sequence
   const heroPinContainerRef = useRef<HTMLDivElement>(null);
   const artworkRef = useRef<HTMLDivElement>(null);
   const cieloImgRef = useRef<HTMLImageElement>(null);
@@ -259,15 +259,8 @@ export default function App() {
 
     const ctx = gsap.context(() => {
       /* ========================================================
-         EXACT DANILO DE MARCO HERO SCROLL SEQUENCE (SCRUB 1)
+         HERO SCROLL SEQUENCE (SCRUB 1)
          Total container: 400vh (pinned)
-         0-7%:   #artwork width: 95% -> 100%
-         3-26%:  #artwork translateY(20vh -> 0), rotate(15deg -> 0deg)
-         5-26%:  #astronauta translateY(-33% -> 0%)
-         5-70%:  #cielo img scale(2 -> 1)
-         40-100%:#astronauta img scale(1 -> 80) + translateY(-900%)
-         50-60%: #sfondo_black opacity(0 -> 1)
-         Roots section enters with #1b1c1e, -20px margin-top
          ======================================================== */
       const heroTl = gsap.timeline({
         scrollTrigger: {
@@ -280,15 +273,15 @@ export default function App() {
         }
       });
 
-      // Set initial values
+      // Set initial values (straight, fully readable, no crooked angle)
       gsap.set(artworkRef.current, {
-        width: '95%',
-        y: '20vh',
-        rotation: 15,
+        width: '100%',
+        y: '0vh',
+        rotation: 0,
         transformOrigin: 'center center'
       });
-      gsap.set(cieloImgRef.current, { scale: 2, transformOrigin: 'center center' });
-      gsap.set(astronautaRef.current, { yPercent: -33 });
+      gsap.set(cieloImgRef.current, { scale: 1.8, transformOrigin: 'center center' });
+      gsap.set(astronautaRef.current, { yPercent: 0 });
       gsap.set(astronautaImgRef.current, {
         scale: 1,
         yPercent: 0,
@@ -298,76 +291,42 @@ export default function App() {
       gsap.set(heroTextOverlayRef.current, { opacity: 1, y: 0 });
 
       // Build precise Scrub timeline normalized from 0 to 100
-      // 0 -> 7%: artwork width 95% -> 100%
-      heroTl.to(
-        artworkRef.current,
-        {
-          width: '100%',
-          ease: 'none',
-          duration: 7
-        },
-        0
-      );
-
-      // Hero text fadeout quickly
+      // Hero text fades out smoothly during initial scroll (0 -> 18%)
       heroTl.to(
         heroTextOverlayRef.current,
         {
           opacity: 0,
-          y: -50,
+          y: -40,
           ease: 'none',
-          duration: 10
+          duration: 18
         },
         0
       );
 
-      // 3 -> 26%: artwork y 20vh -> 0, rotate 15 -> 0
-      heroTl.to(
-        artworkRef.current,
-        {
-          y: '0vh',
-          rotation: 0,
-          ease: 'none',
-          duration: 23
-        },
-        3
-      );
-
-      // 5 -> 26%: astronauta yPercent -33 -> 0
-      heroTl.to(
-        astronautaRef.current,
-        {
-          yPercent: 0,
-          ease: 'none',
-          duration: 21
-        },
-        5
-      );
-
-      // 5 -> 70%: cielo scale 2 -> 1
+      // Parallax cosmic background zoom-out scale 1.8 -> 1 (0 -> 60%)
       heroTl.to(
         cieloImgRef.current,
         {
           scale: 1,
           ease: 'none',
-          duration: 65
+          duration: 60
         },
-        5
+        0
       );
 
-      // 40 -> 100%: astronauta img scale 1 -> 80 + translateY -900%
+      // Astronaut zooms in smoothly into the screen (scale 1 -> 80) and translateY -900% (35 -> 100%)
       heroTl.to(
         astronautaImgRef.current,
         {
           scale: 80,
           yPercent: -900,
           ease: 'none',
-          duration: 60
+          duration: 65
         },
-        40
+        35
       );
 
-      // 50 -> 60%: sfondo_black opacity 0 -> 1
+      // Sfondo black crossfade (52 -> 62%) to cleanly transition into the next section
       heroTl.to(
         sfondoBlackRef.current,
         {
@@ -375,7 +334,7 @@ export default function App() {
           ease: 'none',
           duration: 10
         },
-        50
+        52
       );
 
       /* ========================================================
@@ -562,7 +521,7 @@ export default function App() {
         />
       </div>
 
-      {/* Danilo de Marco Floating Header */}
+      {/* Minimal Floating Header */}
       <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#070709]/80 border-b border-zinc-800/50 px-6 sm:px-12 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3.5">
           <div className="relative group cursor-pointer">
@@ -613,7 +572,7 @@ export default function App() {
       </header>
 
       {/* ========================================================
-          HERO SECTION: 400vh PIN WITH DANILO DE MARCO ZOOM
+          HERO SECTION: 400vh PIN WITH COSMIC ZOOM
           Sticky 100vh inner, #cielo, #astronauta, #artwork, #sfondo_black
           ======================================================== */}
       <section
@@ -621,13 +580,13 @@ export default function App() {
         className="relative w-full h-[400vh] bg-black"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
-          {/* #artwork: respiration width 95% -> 100%, 20vh -> 0, 15deg -> 0 */}
+          {/* #artwork: full bleed, straight, fully readable */}
           <div
             ref={artworkRef}
             id="artwork"
-            className="relative w-[95%] h-full flex items-center justify-center overflow-hidden will-change-transform"
+            className="relative w-full h-full flex items-center justify-center overflow-hidden will-change-transform"
           >
-            {/* #cielo: Parallax sky zoom-out scale 2 -> 1 */}
+            {/* #cielo: Parallax sky zoom-out scale 1.8 -> 1 */}
             <div id="cielo" className="absolute inset-0 w-full h-full">
               <img
                 ref={cieloImgRef}
@@ -638,11 +597,11 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
             </div>
 
-            {/* Astronauta: 30vw centered with translate(-50%, -50%), then scale 1 -> 80 */}
+            {/* Astronauta: centered with translate(-50%, -50%), then scale 1 -> 80 */}
             <div
               ref={astronautaRef}
               id="astronauta"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30vw] min-w-[280px] max-w-[420px] pointer-events-none z-10 will-change-transform"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28vw] min-w-[260px] max-w-[380px] pointer-events-none z-10 will-change-transform"
             >
               <img
                 ref={astronautaImgRef}
@@ -652,15 +611,15 @@ export default function App() {
               />
             </div>
 
-            {/* Initial Hero Typography Overlay (Fades out 0-10%) */}
+            {/* Initial Hero Typography Overlay */}
             <div
               ref={heroTextOverlayRef}
               className="absolute inset-0 z-20 flex flex-col justify-between p-8 sm:p-16 pointer-events-none max-w-7xl mx-auto"
             >
               <div className="pt-24">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 border border-emerald-500/40 text-emerald-400 text-xs font-mono backdrop-blur-md">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 border border-emerald-500/40 text-emerald-400 text-xs font-mono backdrop-blur-md">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span>DANILO DE MARCO SCROLL ENGINE · SCRUB 1</span>
+                  <span>SOFTWARE ENGINEER LEAD · FULLSTACK & AI-FIRST</span>
                 </div>
               </div>
 
@@ -672,11 +631,11 @@ export default function App() {
                   </span>
                 </h1>
                 <p className="mt-4 text-sm sm:text-xl font-mono text-zinc-300 max-w-xl">
-                  Software Engineer Lead · React · TypeScript · Next.js · Metodología AI-First
+                  React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
                 </p>
                 <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-400 animate-bounce">
                   <ChevronDown className="w-4 h-4" />
-                  <span>DESPLÁZATE HACIA ABAJO PARA ACTIVAR EL ZOOM Y LA TRANSIÓN</span>
+                  <span>DESPLÁZATE HACIA ABAJO PARA EXPLORAR</span>
                 </div>
               </div>
             </div>
@@ -1212,7 +1171,7 @@ export default function App() {
 
           <div className="pt-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono text-zinc-500">
             <div>
-              © {new Date().getFullYear()} Bruno Villavicencio — Danilo De Marco Scroll Experience.
+              © {new Date().getFullYear()} Bruno Villavicencio — Portfolio Web & Experiencia Interactiva.
             </div>
 
             <div className="flex items-center gap-6">
