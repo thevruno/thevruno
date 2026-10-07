@@ -13,7 +13,6 @@ import {
   Briefcase,
   GraduationCap,
   Layers,
-  ChevronDown,
   CheckCircle2,
   Copy,
   Rocket
@@ -262,12 +261,12 @@ export default function App() {
 
     // DESKTOP ANIMATIONS (>= 768px)
     mm.add('(min-width: 768px)', () => {
-      // 1. HERO PIN (T1: end: "+=200%")
+      // 1. HERO PIN (T1: end: "+=180%")
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: heroPinContainerRef.current,
           start: 'top top',
-          end: '+=200%',
+          end: '+=180%',
           scrub: 1,
           pin: true,
           anticipatePin: 1
@@ -275,16 +274,17 @@ export default function App() {
       });
 
       gsap.set(artworkRef.current, { width: '100%', y: '0vh', rotation: 0 });
-      gsap.set(cieloImgRef.current, { scale: 1.4 });
+      gsap.set(cieloImgRef.current, { scale: 1.35 });
       gsap.set(astronautaRef.current, { yPercent: 0 });
       gsap.set(astronautaImgRef.current, { scale: 1, yPercent: 0 });
       gsap.set(sfondoBlackRef.current, { opacity: 0 });
       gsap.set(heroTextOverlayRef.current, { opacity: 1, y: 0 });
 
-      heroTl.to(heroTextOverlayRef.current, { opacity: 0, y: -40, ease: 'none', duration: 25 }, 0);
-      heroTl.to(cieloImgRef.current, { scale: 1.05, ease: 'none', duration: 100 }, 0);
-      heroTl.to(astronautaImgRef.current, { scale: 45, yPercent: -450, ease: 'none', duration: 75 }, 15);
-      heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'none', duration: 20 }, 70);
+      // Clean, seamless zoom and fade into roots
+      heroTl.to(heroTextOverlayRef.current, { opacity: 0, y: -30, ease: 'power1.out', duration: 25 }, 0);
+      heroTl.to(cieloImgRef.current, { scale: 1.05, ease: 'power1.out', duration: 100 }, 0);
+      heroTl.to(astronautaImgRef.current, { scale: 35, yPercent: -350, ease: 'power2.inOut', duration: 80 }, 10);
+      heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'power1.inOut', duration: 25 }, 65);
 
       // 2. ROOTS WORD REVEAL (Fix B: start: 5% 70%, end: top 60%, scrub: 0.3, stagger por palabra con espacios intactos)
       const words = gsap.utils.toArray<HTMLElement>('.roots-word');
@@ -454,16 +454,29 @@ export default function App() {
         />
       </div>
 
-      {/* F: Editorial Header (fixed top, padding-top:40px, mix-blend-mode:difference, no solid bg) */}
-      <header className="fixed top-0 left-0 right-0 z-40 pt-8 sm:pt-10 px-6 sm:px-14 flex items-center justify-between mix-blend-difference pointer-events-auto">
-        <a href="#" className="flex items-center gap-3 group text-white">
-          <span className="font-bold tracking-tighter text-lg uppercase font-mono">
-            BV // THEVRUNO
-          </span>
-          <span className="w-2 h-2 rounded-full bg-[#65AFFF]" />
-        </a>
+      {/* Restored Minimal Floating Header (Original Design with Profile Pic & Status) */}
+      <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#000000]/80 border-b border-zinc-800/50 px-6 sm:px-12 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3.5">
+          <div className="relative group cursor-pointer">
+            <img
+              src={imgProfile}
+              alt="Bruno Villavicencio"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-[#65AFFF]/40 p-[2px] transition-transform duration-300 group-hover:scale-105"
+            />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#65AFFF] rounded-full ring-2 ring-[#000000]" />
+          </div>
+          <div>
+            <div className="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+              Bruno Villavicencio
+              <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-[#65AFFF]/10 text-[#65AFFF] border border-[#65AFFF]/25">
+                Engineer
+              </span>
+            </div>
+            <div className="text-xs text-zinc-400 font-mono">Software Engineer · Córdoba, AR</div>
+          </div>
+        </div>
 
-        <nav className="flex items-center gap-8 sm:gap-12 text-xs uppercase font-mono tracking-widest text-white">
+        <nav className="flex items-center gap-8 text-xs uppercase font-mono tracking-wider text-zinc-400">
           <a href="#roots" className="hover:text-[#65AFFF] transition-colors hidden sm:inline-block">
             01. Perfil
           </a>
@@ -475,9 +488,10 @@ export default function App() {
           </a>
           <button
             onClick={handleCopyEmail}
-            className="btn-danilo text-white border-white/60 text-xs px-4 py-2"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-700/80 text-zinc-200 hover:border-[#65AFFF] hover:text-[#65AFFF] transition-all text-xs cursor-pointer active:scale-95 shadow-sm"
           >
-            <span>{copiedEmail ? 'Email Copiado!' : 'vruno182@gmail.com'}</span>
+            {copiedEmail ? <CheckCircle2 className="w-3.5 h-3.5 text-[#65AFFF]" /> : <Copy className="w-3.5 h-3.5" />}
+            <span className="font-mono">{copiedEmail ? 'Email Copiado!' : 'vruno182@gmail.com'}</span>
           </button>
         </nav>
       </header>
@@ -506,7 +520,7 @@ export default function App() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#1b1c1e] via-black/40 to-black/70" />
           </div>
 
-          {/* D: Circular Rotating Badge ("cerchio_poster" signature) */}
+          {/* D: Circular Rotating Badge */}
           <div className="absolute top-28 right-8 sm:right-16 z-20 pointer-events-none hidden sm:block">
             <div className="w-28 h-28 relative flex items-center justify-center">
               <svg className="w-full h-full spin-badge" viewBox="0 0 100 100">
@@ -517,7 +531,7 @@ export default function App() {
                 />
                 <text className="text-[9px] font-mono uppercase tracking-[0.24em] fill-white">
                   <textPath href="#circlePath">
-                    SOFTWARE ENGINEER LEAD · AI-FIRST · 2026 ·
+                    SOFTWARE ENGINEER · AI-FIRST · 2026 ·
                   </textPath>
                 </text>
               </svg>
@@ -539,7 +553,7 @@ export default function App() {
             />
           </div>
 
-          {/* A & C: Hero Typography — Asymmetric Layout with Inline Media Pill */}
+          {/* Hero Typography */}
           <div
             ref={heroTextOverlayRef}
             className="absolute inset-0 z-20 flex flex-col justify-end p-8 sm:p-16 pointer-events-none max-w-[85vw] mx-auto pb-16"
@@ -547,35 +561,21 @@ export default function App() {
             <div className="max-w-5xl">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-[#65AFFF]/40 text-[#65AFFF] text-xs font-mono backdrop-blur-md mb-6">
                 <span className="w-2 h-2 rounded-full bg-[#65AFFF] animate-ping" />
-                <span>LEAD SOFTWARE ENGINEER · CÓRDOBA, AR</span>
+                <span>SOFTWARE ENGINEER · CÓRDOBA, AR</span>
               </div>
 
-              {/* Asymmetric H1 with Inline Media Pill */}
+              {/* Clean H1 without GitHub photo pill */}
               <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white leading-[0.88]">
-                BRUNO
-                <span className="media-pill">
-                  <span className="media-pill-inner w-full h-full block overflow-hidden rounded-full">
-                    <img
-                      src={imgProfile}
-                      alt="Bruno Avatar"
-                      className="w-full h-full object-cover scale-110"
-                    />
-                  </span>
-                </span>
-                <br />
+                BRUNO <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#65AFFF] via-white to-zinc-400">
                   VILLAVICENCIO
                 </span>
               </h1>
 
-              <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 border-t border-white/20">
+              <div className="mt-6 pt-6 border-t border-white/20">
                 <p className="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed max-w-[55ch]">
                   React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
                 </p>
-                <div className="flex items-center gap-2 text-xs font-mono text-[#65AFFF] animate-bounce shrink-0">
-                  <ChevronDown className="w-4 h-4" />
-                  <span>SCROLL PARA EXPLORAR</span>
-                </div>
               </div>
             </div>
           </div>
@@ -630,15 +630,15 @@ export default function App() {
             ))}
           </div>
 
-          {/* Editorial Quick Numbers Grid */}
+          {/* Quick Numbers Grid */}
           <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-12 border-t border-zinc-800 font-mono">
             <div>
               <div className="text-4xl sm:text-5xl font-black text-[#65AFFF]">+8 Años</div>
               <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Trayectoria Web</div>
             </div>
             <div>
-              <div className="text-4xl sm:text-5xl font-black text-white">Lead</div>
-              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Frontend en XCONS</div>
+              <div className="text-4xl sm:text-5xl font-black text-white">Full</div>
+              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Stack Mindset</div>
             </div>
             <div>
               <div className="text-4xl sm:text-5xl font-black text-white">AI-1st</div>
@@ -811,7 +811,6 @@ export default function App() {
             <span className="text-xs uppercase font-mono text-[#65AFFF] tracking-wider">
               03 // CASOS DE ESTUDIO
             </span>
-            <span className="text-zinc-500 font-mono text-xs">| SCROLL HORIZONTAL</span>
           </div>
 
           <div className="flex items-center gap-2 font-mono text-sm bg-black/70 px-4 py-1.5 rounded-full border border-zinc-800">
