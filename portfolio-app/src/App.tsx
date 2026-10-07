@@ -32,9 +32,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const [copiedEmail, setCopiedEmail] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
-  const [cursorText, setCursorText] = useState('');
-  const [cursorActive, setCursorActive] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   // References
@@ -61,10 +58,16 @@ export default function App() {
   const horizontalWrapperRef = useRef<HTMLDivElement>(null);
   const progressLineRef = useRef<HTMLDivElement>(null);
 
-  const rootsBio =
-    "Software Engineer con más de 8 años de experiencia construyendo aplicaciones web escalables con React, TypeScript y arquitecturas modernas basadas en APIs. Lidero iniciativas frontend de alto impacto con un enfoque AI-First: integrando Claude, Claude Code y servidores MCP directamente en el ciclo de vida del software, optimizando performance, arquitectura y entrega de valor.".split(
-      " "
-    );
+  // Roots text array ensuring explicit whitespace preserved
+  const rootsBioWords = [
+    "Software", "Engineer", "con", "más", "de", "8", "años", "de", "experiencia",
+    "construyendo", "aplicaciones", "web", "escalables", "con", "React,", "TypeScript",
+    "y", "arquitecturas", "modernas", "basadas", "en", "APIs.", "Lidero", "iniciativas",
+    "frontend", "de", "alto", "impacto", "con", "enfoque", "AI-First:", "integrando",
+    "Claude,", "Claude", "Code", "y", "servidores", "MCP", "directamente", "en", "el",
+    "ciclo", "de", "vida", "del", "software,", "optimizando", "arquitectura,", "performance",
+    "y", "entrega", "de", "negocio."
+  ];
 
   const projects = [
     {
@@ -73,7 +76,7 @@ export default function App() {
       role: 'Software Engineer Lead',
       company: 'XCONS',
       period: '2024 — Presente',
-      category: 'Enterprise Platform · AI-First Architecture',
+      category: 'Enterprise Platform · AI Architecture',
       title: 'Plataforma Web Empresarial & Metodología AI-First',
       summary:
         'Liderazgo frontend en React y TypeScript con arquitectura modular y contratos de API escalables.',
@@ -102,7 +105,7 @@ export default function App() {
         'Procesamiento masivo y visualización en tiempo real de datos vehiculares en América Latina.',
       stats: [
         { label: 'Procesamiento', val: '+15M datos' },
-        { label: 'Componentes', val: 'Sistema Modular' },
+        { label: 'Componentes', val: 'Modular System' },
         { label: 'Disponibilidad', val: '99.9%' }
       ],
       tags: ['React', 'TypeScript', 'Data Viz', 'State Management', 'REST APIs', 'Tailwind'],
@@ -231,18 +234,9 @@ export default function App() {
     }
   ];
 
-  // Cursor follow
-  useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', onMouseMove);
-    return () => window.removeEventListener('mousemove', onMouseMove);
-  }, []);
-
   // Main Lenis + GSAP ScrollTrigger Integration
   useEffect(() => {
-    // Lenis smooth scroll with unified lerp 0.09 as specified in T4
+    // Lenis with exact lerp: 0.09 as defined in setup.js
     const lenis = new Lenis({
       duration: 1.1,
       lerp: 0.09,
@@ -268,7 +262,7 @@ export default function App() {
 
     // DESKTOP ANIMATIONS (>= 768px)
     mm.add('(min-width: 768px)', () => {
-      // 1. HERO PIN (T1: end: "+=200%", no 400vh gap)
+      // 1. HERO PIN (T1: end: "+=200%")
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: heroPinContainerRef.current,
@@ -287,35 +281,59 @@ export default function App() {
       gsap.set(sfondoBlackRef.current, { opacity: 0 });
       gsap.set(heroTextOverlayRef.current, { opacity: 1, y: 0 });
 
-      // Smooth fadeout of text (0 -> 25%)
       heroTl.to(heroTextOverlayRef.current, { opacity: 0, y: -40, ease: 'none', duration: 25 }, 0);
-      // Gentle cosmic sky zoom-out (0 -> 100%)
       heroTl.to(cieloImgRef.current, { scale: 1.05, ease: 'none', duration: 100 }, 0);
-      // Zoom astronaut into screen (scale 1 -> 45) (15 -> 90%)
       heroTl.to(astronautaImgRef.current, { scale: 45, yPercent: -450, ease: 'none', duration: 75 }, 15);
-      // Sfondo dark crossfade (70 -> 90%) to cleanly blend into roots
       heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'none', duration: 20 }, 70);
 
-      // 2. ROOTS WORD REVEAL
+      // 2. ROOTS WORD REVEAL (Fix B: start: 5% 70%, end: top 60%, scrub: 0.3, stagger por palabra con espacios intactos)
       const words = gsap.utils.toArray<HTMLElement>('.roots-word');
       gsap.fromTo(
         words,
-        { opacity: 0.15, y: 6 },
+        { opacity: 0.1, y: 8 },
         {
           opacity: 1,
           y: 0,
-          stagger: 0.04,
+          stagger: 0.05,
           ease: 'none',
           scrollTrigger: {
             trigger: rootsSectionRef.current,
-            start: 'top 75%',
-            end: 'top 20%',
-            scrub: 1
+            start: 'top 70%',
+            end: 'top 30%',
+            scrub: 0.3
           }
         }
       );
 
-      // 3. PEACE MANIFIESTO PIN (T1: end: "+=300%", no 6000px gap)
+      // Inline media pills opening animation (C: width 0 -> 100%)
+      gsap.utils.toArray<HTMLElement>('.media-pill-inner').forEach((el) => {
+        gsap.fromTo(
+          el,
+          { width: '0%' },
+          {
+            width: '100%',
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 80%',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        );
+      });
+
+      // Image wipe effect (D: wipe translateY 0 -> -105% & img scale 1.2 -> 1)
+      gsap.utils.toArray<HTMLElement>('.img-wipe-container').forEach((container) => {
+        ScrollTrigger.create({
+          trigger: container,
+          start: 'top 75%',
+          onEnter: () => container.classList.add('wiped'),
+          onLeaveBack: () => container.classList.remove('wiped')
+        });
+      });
+
+      // 3. PEACE MANIFIESTO PIN (end: "+=300%")
       const peaceTl = gsap.timeline({
         scrollTrigger: {
           trigger: peacePinSectionRef.current,
@@ -334,7 +352,7 @@ export default function App() {
       );
       peaceTl.to(peaceMarqueeRef.current, { xPercent: -35, ease: 'none', duration: 100 }, 0);
 
-      // 4. FIGHT / POSTERS PIN (T1: end: "+=200%")
+      // 4. FIGHT / POSTERS PIN (end: "+=200%")
       const fightTl = gsap.timeline({
         scrollTrigger: {
           trigger: fightPinSectionRef.current,
@@ -352,7 +370,7 @@ export default function App() {
         0
       );
 
-      // 5. BRANDING SECTION PARALLAX
+      // 5. BRANDING CARDS PARALLAX (E: rotate +-8deg, col +-3deg, aspect 1/1, border #3b3b3b)
       const brandTl = gsap.timeline({
         scrollTrigger: {
           trigger: brandingSectionRef.current,
@@ -361,11 +379,11 @@ export default function App() {
           scrub: 1
         }
       });
-      brandTl.fromTo(colLeftRef.current, { y: 40, rotation: -2 }, { y: -40, rotation: 2, ease: 'none' }, 0);
-      brandTl.fromTo(colMidRef.current, { y: 0 }, { y: -70, ease: 'none' }, 0);
-      brandTl.fromTo(colRightRef.current, { y: 50, rotation: 2 }, { y: -30, rotation: -2, ease: 'none' }, 0);
+      brandTl.fromTo(colLeftRef.current, { y: 60, rotation: -3 }, { y: -60, rotation: 3, ease: 'none' }, 0);
+      brandTl.fromTo(colMidRef.current, { y: 0 }, { y: -80, ease: 'none' }, 0);
+      brandTl.fromTo(colRightRef.current, { y: 70, rotation: 3 }, { y: -40, rotation: -3, ease: 'none' }, 0);
 
-      // 6. PROYECTOS HORIZONTAL PIN (T1: end: "+=3000")
+      // 6. PROYECTOS HORIZONTAL PIN (end: "+=3000")
       const wrapper = horizontalWrapperRef.current;
       const section = horizontalSectionRef.current;
       if (wrapper && section) {
@@ -388,7 +406,7 @@ export default function App() {
       }
     });
 
-    // MOBILE ADAPTATION (< 768px): T4 - No horizontal, normal flow, gentle scale
+    // MOBILE ADAPTATION (< 768px)
     mm.add('(max-width: 767px)', () => {
       const heroTl = gsap.timeline({
         scrollTrigger: {
@@ -404,7 +422,6 @@ export default function App() {
       heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'none', duration: 25 }, 65);
     });
 
-    // Refresh triggers after assets/fonts load
     ScrollTrigger.refresh();
 
     return () => {
@@ -421,91 +438,53 @@ export default function App() {
       particleCount: 50,
       spread: 70,
       origin: { y: 0.85 },
-      colors: ['#10b981', '#34d399', '#6ee7b7', '#ffffff']
+      colors: ['#65AFFF', '#ffffff', '#1b1c1e']
     });
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
   return (
-    <div className="min-h-screen bg-[#000000] text-zinc-100 selection:bg-emerald-400 selection:text-black relative">
-      {/* Interactive Cursor */}
-      <div
-        className={`fixed top-0 left-0 w-8 h-8 rounded-full border border-emerald-400 pointer-events-none z-50 transition-transform duration-100 ease-out hidden md:flex items-center justify-center ${
-          cursorActive ? 'scale-[2.8] bg-emerald-500/20 backdrop-blur-xs border-emerald-300' : 'scale-100'
-        }`}
-        style={{
-          transform: `translate(${cursorPos.x - 16}px, ${cursorPos.y - 16}px)`
-        }}
-      >
-        {cursorText && (
-          <span className="text-[7px] uppercase font-mono font-bold tracking-widest text-emerald-300">
-            {cursorText}
-          </span>
-        )}
-      </div>
-
+    <div className="min-h-screen bg-[#000000] text-[#f5f5f5] selection:bg-[#65AFFF] selection:text-black relative">
       {/* Top Floating Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-[3px] bg-zinc-900/60 z-50">
         <div
           ref={progressLineRef}
-          className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-white transition-all duration-75"
+          className="h-full bg-[#65AFFF] transition-all duration-75"
           style={{ width: '0%' }}
         />
       </div>
 
-      {/* Minimal Floating Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#000000]/80 border-b border-zinc-800/50 px-6 sm:px-12 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3.5">
-          <div className="relative group cursor-pointer">
-            <img
-              src={imgProfile}
-              alt="Bruno Villavicencio"
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-500/40 p-[2px] transition-transform duration-300 group-hover:scale-105"
-            />
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-[#000000]" />
-          </div>
-          <div>
-            <div className="text-sm font-bold tracking-tight text-white flex items-center gap-2">
-              Bruno Villavicencio
-              <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                Lead
-              </span>
-            </div>
-            <div className="text-xs text-zinc-400 font-mono">Software Engineer · Córdoba, AR</div>
-          </div>
-        </div>
+      {/* F: Editorial Header (fixed top, padding-top:40px, mix-blend-mode:difference, no solid bg) */}
+      <header className="fixed top-0 left-0 right-0 z-40 pt-8 sm:pt-10 px-6 sm:px-14 flex items-center justify-between mix-blend-difference pointer-events-auto">
+        <a href="#" className="flex items-center gap-3 group text-white">
+          <span className="font-bold tracking-tighter text-lg uppercase font-mono">
+            BV // THEVRUNO
+          </span>
+          <span className="w-2 h-2 rounded-full bg-[#65AFFF]" />
+        </a>
 
-        <nav className="flex items-center gap-8 text-xs uppercase font-mono tracking-wider text-zinc-400">
-          <a href="#roots" className="hover:text-emerald-400 transition-colors hidden sm:inline-block">
+        <nav className="flex items-center gap-8 sm:gap-12 text-xs uppercase font-mono tracking-widest text-white">
+          <a href="#roots" className="hover:text-[#65AFFF] transition-colors hidden sm:inline-block">
             01. Perfil
           </a>
-          <a href="#proyectos" className="hover:text-emerald-400 transition-colors hidden sm:inline-block">
+          <a href="#proyectos" className="hover:text-[#65AFFF] transition-colors hidden sm:inline-block">
             02. Obras
           </a>
-          <a href="#experiencia" className="hover:text-emerald-400 transition-colors hidden sm:inline-block">
+          <a href="#experiencia" className="hover:text-[#65AFFF] transition-colors hidden sm:inline-block">
             03. Trayectoria
           </a>
           <button
             onClick={handleCopyEmail}
-            onMouseEnter={() => {
-              setCursorActive(true);
-              setCursorText('Copiar');
-            }}
-            onMouseLeave={() => {
-              setCursorActive(false);
-              setCursorText('');
-            }}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-zinc-700/80 text-zinc-200 hover:border-emerald-500 hover:text-emerald-400 transition-all text-xs cursor-pointer active:scale-95 shadow-sm"
+            className="btn-danilo text-white border-white/60 text-xs px-4 py-2"
           >
-            {copiedEmail ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="font-mono">{copiedEmail ? 'Email Copiado!' : 'vruno182@gmail.com'}</span>
+            <span>{copiedEmail ? 'Email Copiado!' : 'vruno182@gmail.com'}</span>
           </button>
         </nav>
       </header>
 
       {/* ========================================================
-          1. HERO SECTION: #000000 background, Sticky 100vh
-          T1: end "+=200%", no 400vh gap, blends with #1b1c1e
+          1. HERO SECTION: #000000 background
+          Asymmetric Title with Inline Media Pill (C) & Circular Rotating Badge (D)
           ======================================================== */}
       <section
         ref={heroPinContainerRef}
@@ -516,7 +495,7 @@ export default function App() {
           id="artwork"
           className="relative w-full h-full flex items-center justify-center overflow-hidden will-change-transform"
         >
-          {/* Cosmic Sky background */}
+          {/* Cosmic Parallax Sky */}
           <div id="cielo" className="absolute inset-0 w-full h-full">
             <img
               ref={cieloImgRef}
@@ -527,7 +506,26 @@ export default function App() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#1b1c1e] via-black/40 to-black/70" />
           </div>
 
-          {/* Astronaut with Bruno's Face inside illuminated helmet */}
+          {/* D: Circular Rotating Badge ("cerchio_poster" signature) */}
+          <div className="absolute top-28 right-8 sm:right-16 z-20 pointer-events-none hidden sm:block">
+            <div className="w-28 h-28 relative flex items-center justify-center">
+              <svg className="w-full h-full spin-badge" viewBox="0 0 100 100">
+                <path
+                  id="circlePath"
+                  d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+                  fill="none"
+                />
+                <text className="text-[9px] font-mono uppercase tracking-[0.24em] fill-white">
+                  <textPath href="#circlePath">
+                    SOFTWARE ENGINEER LEAD · AI-FIRST · 2026 ·
+                  </textPath>
+                </text>
+              </svg>
+              <div className="absolute w-3 h-3 rounded-full bg-[#65AFFF]" />
+            </div>
+          </div>
+
+          {/* Astronaut with Bruno's Face inside illuminated visor */}
           <div
             ref={astronautaRef}
             id="astronauta"
@@ -537,35 +535,47 @@ export default function App() {
               ref={astronautaImgRef}
               src={imgAstronaut}
               alt="Bruno Cyber Astronaut Software Engineer"
-              className="w-full h-auto drop-shadow-[0_25px_50px_rgba(16,185,129,0.35)] will-change-transform"
+              className="w-full h-auto drop-shadow-[0_25px_50px_rgba(101,175,255,0.3)] will-change-transform"
             />
           </div>
 
-          {/* Hero Typography with dark backing card for maximum contrast */}
+          {/* A & C: Hero Typography — Asymmetric Layout with Inline Media Pill */}
           <div
             ref={heroTextOverlayRef}
-            className="absolute inset-0 z-20 flex flex-col justify-between p-8 sm:p-16 pointer-events-none max-w-7xl mx-auto"
+            className="absolute inset-0 z-20 flex flex-col justify-end p-8 sm:p-16 pointer-events-none max-w-[85vw] mx-auto pb-16"
           >
-            <div className="pt-20">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-emerald-500/40 text-emerald-400 text-xs font-mono backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>SOFTWARE ENGINEER LEAD · FULLSTACK & AI-FIRST</span>
+            <div className="max-w-5xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-[#65AFFF]/40 text-[#65AFFF] text-xs font-mono backdrop-blur-md mb-6">
+                <span className="w-2 h-2 rounded-full bg-[#65AFFF] animate-ping" />
+                <span>LEAD SOFTWARE ENGINEER · CÓRDOBA, AR</span>
               </div>
-            </div>
 
-            <div className="p-6 sm:p-10 rounded-3xl bg-black/60 backdrop-blur-md border border-zinc-800/80 max-w-4xl">
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white leading-[0.9] [text-wrap:balance]">
-                BRUNO <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
+              {/* Asymmetric H1 with Inline Media Pill */}
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white leading-[0.88]">
+                BRUNO
+                <span className="media-pill">
+                  <span className="media-pill-inner w-full h-full block overflow-hidden rounded-full">
+                    <img
+                      src={imgProfile}
+                      alt="Bruno Avatar"
+                      className="w-full h-full object-cover scale-110"
+                    />
+                  </span>
+                </span>
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#65AFFF] via-white to-zinc-400">
                   VILLAVICENCIO
                 </span>
               </h1>
-              <p className="mt-4 text-base sm:text-xl font-normal text-zinc-200 leading-relaxed max-w-[65ch]">
-                React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
-              </p>
-              <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-400 animate-bounce">
-                <ChevronDown className="w-4 h-4" />
-                <span>DESPLÁZATE HACIA ABAJO PARA EXPLORAR</span>
+
+              <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 border-t border-white/20">
+                <p className="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed max-w-[55ch]">
+                  React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
+                </p>
+                <div className="flex items-center gap-2 text-xs font-mono text-[#65AFFF] animate-bounce shrink-0">
+                  <ChevronDown className="w-4 h-4" />
+                  <span>SCROLL PARA EXPLORAR</span>
+                </div>
               </div>
             </div>
           </div>
@@ -581,56 +591,70 @@ export default function App() {
 
       {/* ========================================================
           2. #ROOTS SECTION: Background #1b1c1e, -margin-top -20px
-          T2/T3: High contrast text-zinc-200, py-20, no gaps
+          A & B: 26-column asymmetrical grid, correct whitespace spacing
           ======================================================== */}
       <section
         id="roots"
         ref={rootsSectionRef}
-        className="relative z-20 bg-[#1b1c1e] -mt-5 pt-24 pb-24 px-6 sm:px-14 border-b border-zinc-800"
+        className="relative z-20 bg-[#1b1c1e] -mt-5 pt-32 pb-24 px-6 sm:px-14 border-b border-zinc-800"
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">
+        <div className="max-w-[85vw] mx-auto">
+          {/* Editorial Section Header: 34vw left h2, 34vw right p (Danilo pattern) */}
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-16 border-b border-white/10 mb-16">
+            <h2 className="text-sm font-mono uppercase tracking-widest text-[#65AFFF] md:w-[34vw]">
               01 // PERFIL & MANIFIESTO
-            </span>
-            <span className="text-zinc-400 text-xs font-mono">| REVELADO DINÁMICO</span>
+            </h2>
+            <p className="text-lg text-zinc-300 font-light leading-relaxed md:w-[34vw]">
+              Diseño de sistemas frontend robustos y flujos asistidos por IA orientados a resultados de negocio.
+            </p>
           </div>
 
-          <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-relaxed [text-wrap:balance]">
-            {rootsBio.map((word, idx) => (
+          {/* B: Roots word-by-word reveal with explicit space & inline media pill */}
+          <div className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+            <span className="media-pill mr-4">
+              <span className="media-pill-inner w-full h-full block overflow-hidden rounded-full">
+                <img
+                  src={imgXcons}
+                  alt="XCONS Project"
+                  className="w-full h-full object-cover"
+                />
+              </span>
+            </span>
+            {rootsBioWords.map((word, idx) => (
               <span
                 key={idx}
-                className="roots-word inline-block mr-3 transition-opacity duration-75 text-zinc-100"
+                className="roots-word inline-block mr-[0.28em] transition-opacity duration-75 text-zinc-100"
               >
                 {word}
               </span>
             ))}
-          </p>
+          </div>
 
-          <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-10 border-t border-zinc-700/60 font-mono">
-            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
-              <div className="text-3xl sm:text-4xl font-black text-emerald-400">+8 Años</div>
-              <div className="text-xs uppercase text-zinc-300 mt-1">Experiencia Full</div>
+          {/* Editorial Quick Numbers Grid */}
+          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-12 border-t border-zinc-800 font-mono">
+            <div>
+              <div className="text-4xl sm:text-5xl font-black text-[#65AFFF]">+8 Años</div>
+              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Trayectoria Web</div>
             </div>
-            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
-              <div className="text-3xl sm:text-4xl font-black text-white">Lead</div>
-              <div className="text-xs uppercase text-zinc-300 mt-1">Rol en XCONS</div>
+            <div>
+              <div className="text-4xl sm:text-5xl font-black text-white">Lead</div>
+              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Frontend en XCONS</div>
             </div>
-            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
-              <div className="text-3xl sm:text-4xl font-black text-teal-300">AI-1st</div>
-              <div className="text-xs uppercase text-zinc-300 mt-1">Claude Code & MCP</div>
+            <div>
+              <div className="text-4xl sm:text-5xl font-black text-white">AI-1st</div>
+              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Claude Code & MCP</div>
             </div>
-            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
-              <div className="text-3xl sm:text-4xl font-black text-white">Córdoba</div>
-              <div className="text-xs uppercase text-zinc-300 mt-1">Argentina</div>
+            <div>
+              <div className="text-4xl sm:text-5xl font-black text-zinc-400">Córdoba</div>
+              <div className="text-xs uppercase text-zinc-400 mt-2 font-mono">Argentina</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          3. PEACE / MANIFIESTO: Background #f5f5f5 (T2: Light Rhythm)
-          Dark text on light background to break black-on-black fatigue
+          3. PEACE / MANIFIESTO: Background #f5f5f5 (Light Rhythm)
+          Editorial Pattern: h2 34vw left, p 34vw right, CTA pill button
           ======================================================== */}
       <section
         ref={peacePinSectionRef}
@@ -639,7 +663,7 @@ export default function App() {
         <div className="sticky top-0 w-full h-full flex flex-col items-center justify-center">
           <div
             ref={peaceMarqueeRef}
-            className="absolute whitespace-nowrap text-[18vw] font-black uppercase text-zinc-900/[0.06] select-none tracking-tighter will-change-transform"
+            className="absolute whitespace-nowrap text-[18vw] font-black uppercase text-zinc-900/[0.05] select-none tracking-tighter will-change-transform"
           >
             REACT TYPESCRIPT NEXTJS CLAUDE CODE MCP ARCHITECTURE LEADERSHIP
           </div>
@@ -649,11 +673,11 @@ export default function App() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 will-change-transform text-center px-6 max-w-3xl"
           >
             <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-3xl bg-emerald-600/10 border-2 border-emerald-600 flex items-center justify-center text-emerald-600 shadow-xl">
-                <Rocket className="w-12 h-12 -rotate-45" />
+              <div className="w-24 h-24 rounded-full bg-[#65AFFF]/15 border-2 border-[#65AFFF] flex items-center justify-center text-[#1b1c1e] shadow-lg">
+                <Rocket className="w-10 h-10 -rotate-45 text-[#1b1c1e]" />
               </div>
             </div>
-            <span className="text-xs font-mono uppercase tracking-widest px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold">
+            <span className="text-xs font-mono uppercase tracking-widest px-4 py-1.5 rounded-full bg-[#1b1c1e] text-white font-bold">
               VELOCIDAD DE EJECUCIÓN AGÉNTICA
             </span>
             <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#1b1c1e] mt-4">
@@ -662,13 +686,19 @@ export default function App() {
             <p className="text-zinc-700 text-base sm:text-lg font-normal leading-relaxed mt-3 max-w-[65ch]">
               Flujos automatizados asistidos por Claude Code y MCPs que aceleran refactorizaciones, pruebas y despliegues sin perder rigurosidad técnica.
             </p>
+
+            <div className="mt-8">
+              <a href="#proyectos" className="btn-danilo text-[#1b1c1e] border-[#1b1c1e]">
+                <span>Ver Casos de Estudio</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================
           4. FIGHT / POSTERS: Background #000000
-          T1: end "+=200%", high contrast poster
+          Full bleed architectural poster
           ======================================================== */}
       <section
         ref={fightPinSectionRef}
@@ -685,7 +715,7 @@ export default function App() {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/50 backdrop-blur-xs flex flex-col items-center justify-center p-8 text-center">
-              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-black/80 px-4 py-1.5 rounded-full border border-emerald-500/40">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#65AFFF] bg-black/80 px-4 py-1.5 rounded-full border border-[#65AFFF]/40">
                 MANIFESTO // 2026
               </span>
               <h2 className="text-5xl sm:text-7xl font-black uppercase text-white mt-4 tracking-tighter">
@@ -697,30 +727,100 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          5. PROYECTOS: Background #0d0e12
-          T1/T3: 1 línea + 3 métricas grandes, navegable
+          5. BRANDING CARDS SECTION: Background #1b1c1e
+          E: Cards branding border:1px #3b3b3b, radius:20px, aspect-ratio:1/1, rotación scroll
+          ======================================================== */}
+      <section
+        ref={brandingSectionRef}
+        className="py-24 sm:py-32 px-6 sm:px-14 bg-[#1b1c1e] border-y border-zinc-800 overflow-hidden"
+      >
+        <div className="max-w-[85vw] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-16 border-b border-white/10 mb-16">
+            <h2 className="text-sm font-mono uppercase tracking-widest text-[#65AFFF] md:w-[34vw]">
+              02 // MODULARIDAD & MULTI-ENTORNO
+            </h2>
+            <p className="text-lg text-zinc-300 font-light leading-relaxed md:w-[34vw]">
+              Diseño de interfaces resilientes y componentización en aplicaciones empresariales críticas.
+            </p>
+          </div>
+
+          {/* 3 Columns with aspect-1/1, border #3b3b3b, radius 20px (Danilo style) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div ref={colLeftRef} className="space-y-6 will-change-transform">
+              <div className="aspect-square rounded-[20px] border border-[#3b3b3b] bg-black/60 p-6 flex flex-col justify-between overflow-hidden relative group">
+                <div className="img-wipe-container rounded-xl overflow-hidden h-40">
+                  <img
+                    src={imgXcons}
+                    alt="XCONS Core"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <div>
+                  <span className="text-xs font-mono text-[#65AFFF]">01. ENTERPRISE CORE</span>
+                  <h3 className="text-xl font-bold text-white mt-1">XCONS React Architecture</h3>
+                </div>
+              </div>
+            </div>
+
+            <div ref={colMidRef} className="space-y-6 will-change-transform md:mt-12">
+              <div className="aspect-square rounded-[20px] border border-[#3b3b3b] bg-black/60 p-6 flex flex-col justify-between overflow-hidden relative group">
+                <div className="img-wipe-container rounded-xl overflow-hidden h-40">
+                  <img
+                    src={imgAutomotive}
+                    alt="Automotive Telematics"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <div>
+                  <span className="text-xs font-mono text-[#65AFFF]">02. TELEMETRÍA LATAM</span>
+                  <h3 className="text-xl font-bold text-white mt-1">Promotive Data Stream</h3>
+                </div>
+              </div>
+            </div>
+
+            <div ref={colRightRef} className="space-y-6 will-change-transform">
+              <div className="aspect-square rounded-[20px] border border-[#3b3b3b] bg-black/60 p-6 flex flex-col justify-between overflow-hidden relative group">
+                <div className="img-wipe-container rounded-xl overflow-hidden h-40">
+                  <img
+                    src={imgIdentity}
+                    alt="VU Cybersecurity"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <div>
+                  <span className="text-xs font-mono text-[#65AFFF]">03. ZERO-TRUST IDENTITY</span>
+                  <h3 className="text-xl font-bold text-white mt-1">VU Inc. Security Flow</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================
+          6. PROYECTOS: Background #0d0e12
+          Image Green Wipe (D) + 1 línea + 3 métricas grandes
           ======================================================== */}
       <section
         id="proyectos"
         ref={horizontalSectionRef}
         className="relative w-full md:h-screen overflow-hidden bg-[#0d0e12] border-b border-zinc-800/80"
       >
-        <div className="hidden md:flex absolute top-20 left-6 sm:left-12 right-6 sm:right-12 z-30 items-center justify-between pointer-events-none">
+        <div className="hidden md:flex absolute top-20 left-6 sm:left-14 right-6 sm:right-14 z-30 items-center justify-between pointer-events-none">
           <div className="flex items-center gap-3">
-            <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">
-              02 // CASOS DE ESTUDIO
+            <span className="text-xs uppercase font-mono text-[#65AFFF] tracking-wider">
+              03 // CASOS DE ESTUDIO
             </span>
-            <span className="text-zinc-400 font-mono text-xs">| SCROLL HORIZONTAL</span>
+            <span className="text-zinc-500 font-mono text-xs">| SCROLL HORIZONTAL</span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-sm bg-black/60 px-3 py-1 rounded-full border border-zinc-800">
-            <span className="text-emerald-400 font-bold">0{currentSlideIndex + 1}</span>
+          <div className="flex items-center gap-2 font-mono text-sm bg-black/70 px-4 py-1.5 rounded-full border border-zinc-800">
+            <span className="text-[#65AFFF] font-bold">0{currentSlideIndex + 1}</span>
             <span className="text-zinc-600">/</span>
             <span className="text-zinc-400">0{projects.length}</span>
           </div>
         </div>
 
-        {/* Horizontal Container (Stacked on mobile <768px, pinned horizontal on desktop) */}
         <div
           ref={horizontalWrapperRef}
           className="flex flex-col md:flex-row h-auto md:h-full w-full md:w-max items-center will-change-transform py-16 md:py-0"
@@ -731,19 +831,9 @@ export default function App() {
               className="w-full md:w-screen min-h-screen md:h-screen flex-shrink-0 flex items-center justify-center px-6 sm:px-14 lg:px-20 pt-16 md:pt-20 pb-12"
             >
               <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-                {/* Image card with dark overlay to protect text */}
-                <div
-                  onMouseEnter={() => {
-                    setCursorActive(true);
-                    setCursorText('Explorar');
-                  }}
-                  onMouseLeave={() => {
-                    setCursorActive(false);
-                    setCursorText('');
-                  }}
-                  className="lg:col-span-7 relative group rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all duration-500 shadow-2xl"
-                >
-                  <div className="aspect-[16/10] overflow-hidden relative">
+                {/* Image card with Green Wipe (D) */}
+                <div className="lg:col-span-7 relative group rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 hover:border-[#65AFFF]/50 transition-all duration-500 shadow-2xl">
+                  <div className="aspect-[16/10] overflow-hidden relative img-wipe-container">
                     <img
                       src={p.image}
                       alt={p.title}
@@ -751,7 +841,7 @@ export default function App() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-xs font-mono">
-                      <span className="px-3 py-1 rounded-md bg-black/80 backdrop-blur-md text-emerald-400 border border-zinc-700/60 font-semibold">
+                      <span className="px-3 py-1 rounded-md bg-black/80 backdrop-blur-md text-[#65AFFF] border border-zinc-700/60 font-semibold">
                         {p.category}
                       </span>
                       <span className="px-3 py-1 rounded-md bg-black/80 backdrop-blur-md text-zinc-200 border border-zinc-700/60">
@@ -764,10 +854,10 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Info Card (T3: 1 línea + 3 métricas grandes) */}
+                {/* Info Card */}
                 <div className="lg:col-span-5 flex flex-col justify-center space-y-6">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-semibold">
+                    <div className="flex items-center gap-2 text-xs font-mono text-[#65AFFF] mb-2 font-semibold">
                       <Briefcase className="w-3.5 h-3.5" />
                       <span>{p.company}</span>
                       <span>·</span>
@@ -785,7 +875,7 @@ export default function App() {
                   <div className="space-y-2">
                     {p.bulletPoints.map((bp, i) => (
                       <div key={i} className="flex items-start gap-2.5 text-sm sm:text-base text-zinc-300">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
+                        <CheckCircle2 className="w-4 h-4 text-[#65AFFF] shrink-0 mt-1" />
                         <span>{bp}</span>
                       </div>
                     ))}
@@ -802,12 +892,12 @@ export default function App() {
                     ))}
                   </div>
 
-                  {/* 3 Métricas Grandes (T3) */}
+                  {/* 3 Métricas Grandes */}
                   <div className="grid grid-cols-3 gap-3 pt-4 border-t border-zinc-800">
                     {p.stats.map((s, idx) => (
                       <div key={idx} className="p-3 rounded-xl bg-black/50 border border-zinc-800 text-center">
                         <div className="text-[11px] font-mono text-zinc-400 uppercase font-medium">{s.label}</div>
-                        <div className="text-base sm:text-lg font-mono font-black text-emerald-400 mt-1">{s.val}</div>
+                        <div className="text-base sm:text-lg font-mono font-black text-[#65AFFF] mt-1">{s.val}</div>
                       </div>
                     ))}
                   </div>
@@ -819,24 +909,19 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          6. EXPERIENCIA: Background #f5f5f5 (T2: Light Rhythm)
-          Dark text on light background
+          7. EXPERIENCIA: Background #f5f5f5 (Light Rhythm)
+          Editorial Pattern: h2 34vw left, p 34vw right
           ======================================================== */}
       <section
         id="experiencia"
-        className="py-24 px-6 sm:px-12 bg-[#f5f5f5] text-[#1b1c1e] border-t border-zinc-300"
+        className="py-24 px-6 sm:px-14 bg-[#f5f5f5] text-[#1b1c1e] border-t border-zinc-300"
       >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div>
-              <span className="text-xs uppercase font-mono text-emerald-700 font-bold tracking-wider">
-                03 // TRAYECTORIA
-              </span>
-              <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#1b1c1e] mt-2">
-                Historial Profesional
-              </h2>
-            </div>
-            <p className="text-zinc-600 text-base max-w-md">
+        <div className="max-w-[85vw] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-16 border-b border-zinc-300 mb-16">
+            <h2 className="text-sm font-mono uppercase tracking-widest text-[#1b1c1e] font-bold md:w-[34vw]">
+              04 // TRAYECTORIA PROFESIONAL
+            </h2>
+            <p className="text-lg text-zinc-700 font-normal leading-relaxed md:w-[34vw]">
               Evolución desde desarrollo fullstack hasta liderazgo de ingeniería frontend y arquitectura de sistemas complejos.
             </p>
           </div>
@@ -844,12 +929,12 @@ export default function App() {
           <div className="border-l-2 border-zinc-300 ml-3 sm:ml-6 pl-6 sm:pl-10 space-y-12">
             {experienceHistory.map((item, idx) => (
               <div key={idx} className="relative group">
-                <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-4 h-4 rounded-full bg-[#f5f5f5] border-2 border-zinc-400 group-hover:border-emerald-600 group-hover:scale-125 transition-all duration-300">
-                  <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full m-auto mt-[3px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-4 h-4 rounded-full bg-[#f5f5f5] border-2 border-zinc-400 group-hover:border-[#65AFFF] group-hover:scale-125 transition-all duration-300">
+                  <div className="w-1.5 h-1.5 bg-[#65AFFF] rounded-full m-auto mt-[3px] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
 
                 <div className="flex flex-wrap items-baseline gap-3">
-                  <span className="text-xs font-mono font-bold text-emerald-800 px-2.5 py-0.5 rounded bg-emerald-100 border border-emerald-300">
+                  <span className="text-xs font-mono font-bold text-[#1b1c1e] px-2.5 py-0.5 rounded bg-zinc-200 border border-zinc-300">
                     {item.period}
                   </span>
                   <span className="text-xs uppercase font-mono tracking-wider text-zinc-500 font-semibold">{item.badge}</span>
@@ -868,11 +953,11 @@ export default function App() {
 
           <div className="mt-16 p-6 sm:p-8 rounded-2xl bg-white border border-zinc-300 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700">
+              <div className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-300 flex items-center justify-center text-[#1b1c1e]">
                 <GraduationCap className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-xs uppercase font-mono text-emerald-800 font-bold">Educación Formal</div>
+                <div className="text-xs uppercase font-mono text-zinc-600 font-bold">Educación Formal</div>
                 <div className="text-lg font-bold text-[#1b1c1e]">Técnico Superior en Programación</div>
                 <div className="text-sm text-zinc-600">Universidad Tecnológica Nacional (UTN) — Córdoba, Argentina</div>
               </div>
@@ -885,20 +970,17 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          7. SKILLS: Background #0d0e12
-          T2: Dark section after light experience
+          8. SKILLS: Background #0d0e12
+          Editorial Header & clean cards
           ======================================================== */}
-      <section id="skills" className="py-24 px-6 sm:px-12 bg-[#0d0e12] text-zinc-100 border-t border-zinc-800/80">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div>
-              <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">04 // CAPACIDADES</span>
-              <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-2">
-                Arsenal Tecnológico
-              </h2>
-            </div>
-            <p className="text-zinc-300 text-base max-w-md">
-              Especialización en React, arquitecturas escalables, diseño de APIs y flujos agénticos con IA.
+      <section id="skills" className="py-24 px-6 sm:px-14 bg-[#0d0e12] text-zinc-100 border-t border-zinc-800/80">
+        <div className="max-w-[85vw] mx-auto">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 pb-16 border-b border-white/10 mb-16">
+            <h2 className="text-sm font-mono uppercase tracking-widest text-[#65AFFF] md:w-[34vw]">
+              05 // ARSENAL TECNOLÓGICO
+            </h2>
+            <p className="text-lg text-zinc-300 font-light leading-relaxed md:w-[34vw]">
+              Especialización profunda en React, arquitecturas escalables, diseño de APIs y flujos agénticos con IA.
             </p>
           </div>
 
@@ -906,9 +988,9 @@ export default function App() {
             {skillGroups.map((group, idx) => (
               <div
                 key={idx}
-                className="p-7 rounded-2xl bg-black/40 border border-zinc-800 hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+                className="p-7 rounded-[20px] bg-black/40 border border-[#3b3b3b] hover:border-[#65AFFF]/50 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
               >
-                <div className="w-10 h-10 rounded-lg bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400">
+                <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-[#65AFFF]">
                   {idx === 0 && <Code2 className="w-5 h-5" />}
                   {idx === 1 && <Layers className="w-5 h-5" />}
                   {idx === 2 && <Cpu className="w-5 h-5" />}
@@ -918,7 +1000,7 @@ export default function App() {
                 <ul className="space-y-2.5">
                   {group.skills.map((s, i) => (
                     <li key={i} className="text-sm font-mono text-zinc-300 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#65AFFF]" />
                       <span>{s}</span>
                     </li>
                   ))}
@@ -930,17 +1012,17 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          8. FOOTER: Background #000000
-          Clean finish, high contrast
+          9. FOOTER: Background #000000
+          Clean finish, Danilo pill CTA, mix-blend friendly
           ======================================================== */}
-      <footer id="contacto" className="border-t border-zinc-800 bg-[#000000] pt-24 pb-16 px-6 sm:px-12">
-        <div className="max-w-7xl mx-auto">
+      <footer id="contacto" className="border-t border-zinc-800 bg-[#000000] pt-24 pb-16 px-6 sm:px-14">
+        <div className="max-w-[85vw] mx-auto">
           <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 pb-16 border-b border-zinc-800/80">
             <div>
-              <span className="text-xs font-mono uppercase text-emerald-400 tracking-wider">¿Hablamos de tu próximo desafío?</span>
+              <span className="text-xs font-mono uppercase text-[#65AFFF] tracking-wider">¿Hablamos de tu próximo desafío?</span>
               <h2 className="text-4xl sm:text-7xl font-black uppercase tracking-tighter text-white mt-3 [text-wrap:balance]">
                 Creemos algo <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-white">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#65AFFF] via-white to-zinc-400">
                   extraordinario.
                 </span>
               </h2>
@@ -949,35 +1031,22 @@ export default function App() {
             <div className="flex flex-col gap-4">
               <button
                 onClick={handleCopyEmail}
-                onMouseEnter={() => {
-                  setCursorActive(true);
-                  setCursorText('Copiar');
-                }}
-                onMouseLeave={() => {
-                  setCursorActive(false);
-                  setCursorText('');
-                }}
-                className="group flex items-center justify-between gap-6 px-8 py-5 rounded-2xl bg-zinc-900 border border-zinc-700 hover:border-emerald-500 hover:bg-zinc-850 transition-all cursor-pointer shadow-xl active:scale-95"
+                className="btn-danilo text-white border-white/60 text-sm px-8 py-4"
               >
-                <div className="text-left">
-                  <div className="text-xs uppercase font-mono text-zinc-300 font-semibold">Email Directo</div>
-                  <div className="text-lg sm:text-xl font-bold font-mono text-white group-hover:text-emerald-400 transition-colors">
-                    vruno182@gmail.com
-                  </div>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                  {copiedEmail ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-base">{copiedEmail ? 'Email Copiado!' : 'vruno182@gmail.com'}</span>
+                  {copiedEmail ? <CheckCircle2 className="w-4 h-4 text-[#65AFFF]" /> : <Copy className="w-4 h-4" />}
                 </div>
               </button>
 
-              <div className="flex items-center gap-4 text-xs font-mono text-zinc-300">
+              <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <MapPin className="w-3.5 h-3.5 text-[#65AFFF]" />
                   <span>Córdoba, Argentina</span>
                 </div>
                 <span>·</span>
                 <div className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <Phone className="w-3.5 h-3.5 text-[#65AFFF]" />
                   <span>0351 15-631-8939</span>
                 </div>
               </div>
@@ -994,7 +1063,7 @@ export default function App() {
                 href="https://linkedin.com/in/vruno"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                className="hover:text-[#65AFFF] transition-colors flex items-center gap-1"
               >
                 <span>LinkedIn</span>
                 <ArrowUpRight className="w-3 h-3" />
@@ -1003,7 +1072,7 @@ export default function App() {
                 href="https://github.com/thevruno"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-emerald-400 transition-colors flex items-center gap-1"
+                className="hover:text-[#65AFFF] transition-colors flex items-center gap-1"
               >
                 <span>GitHub</span>
                 <ArrowUpRight className="w-3 h-3" />

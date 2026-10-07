@@ -1,47 +1,46 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --bg-color: #070709;
-    --accent: #10b981;
-  }
+:root {
+  --black: #1b1c1e;
+  --white: #f5f5f5;
+  --green: #65AFFF;
+  --animation: cubic-bezier(.215, .61, .355, 1);
+  --bigMargin: 130px;
+  --smallMargin: 80px;
+}
 
-  html.lenis, html.lenis body {
-    height: auto;
-  }
+html.lenis, html.lenis body {
+  height: auto;
+}
 
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
 
-  .lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
-  }
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
 
-  .lenis.lenis-stopped {
-    overflow: hidden;
-  }
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
 
-  .lenis.lenis-smooth iframe {
-    pointer-events: none;
-  }
+html {
+  background-color: #000000;
+  color: #f5f5f5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
 
-  html {
-    background-color: #070709;
-    color: #e2e8f0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  }
+body {
+  overflow-x: hidden;
+  margin: 0;
+  background-color: #000000;
+}
 
-  body {
-    overflow-x: hidden;
-    margin: 0;
-    background-color: #070709;
-  }
-
-  ::selection {
-    background-color: #10b981;
-    color: #000;
-  }
+::selection {
+  background-color: var(--green);
+  color: #000;
 }
 
 /* Custom sleek scrollbar */
@@ -49,17 +48,106 @@
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #070709;
+  background: #000;
 }
 ::-webkit-scrollbar-thumb {
   background: #27272a;
-  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: var(--green);
 }
 
-/* Noise overlay for high-end award-winning texture */
-.bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+/* 26-column editorial grid for headline asymmetry (Danilo De Marco exact pattern) */
+.grid-26 {
+  display: grid;
+  grid-template-columns: repeat(26, minmax(0, 1fr));
+  width: 100%;
+}
+
+/* Inline media pill in headlines (Firma Danilo) */
+.media-pill {
+  display: inline-flex;
+  vertical-align: middle;
+  height: clamp(2rem, 5vw, 4.5rem);
+  width: clamp(3.5rem, 9vw, 8rem);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  margin: 0 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Circular Rotating Badge (cerchio_poster) */
+@keyframes spinBadge {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-badge {
+  animation: spinBadge 14s linear infinite;
+}
+
+/* Danilo Button Pill with vertical slide and green fill */
+.btn-danilo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 70px;
+  padding: 14px 28px;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  overflow: hidden;
+  cursor: pointer;
+  transition: color 0.4s var(--animation), border-color 0.4s var(--animation);
+}
+
+.btn-danilo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--green);
+  transform: translateY(100%);
+  transition: transform 0.4s var(--animation);
+  z-index: 0;
+  border-radius: 70px;
+}
+
+.btn-danilo:hover::after {
+  transform: translateY(0%);
+}
+
+.btn-danilo:hover {
+  color: #000000 !important;
+  border-color: var(--green) !important;
+}
+
+.btn-danilo > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Image Green Wipe (Danilo signature) */
+.img-wipe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.img-wipe-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--green);
+  z-index: 10;
+  transform: translateY(0%);
+  transition: transform 1s var(--animation);
+  pointer-events: none;
+}
+
+.img-wipe-container.wiped::before {
+  transform: translateY(-105%);
 }
