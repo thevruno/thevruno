@@ -78,7 +78,7 @@ export default function App() {
         { label: 'Arquitectura', val: 'Clean SSR' }
       ],
       tags: ['React', 'TypeScript', 'Next.js', 'Claude MCP', 'Design Systems', 'Core Web Vitals'],
-      image: '/images/project-xcons.jpg',
+      image: './images/project-xcons.jpg',
       bulletPoints: [
         'Definición de estándares de ingeniería frontend y contratos API de alta fidelidad',
         'Integración en el IDE de herramientas agénticas (Claude Code) reduciendo deuda técnica',
@@ -101,7 +101,7 @@ export default function App() {
         { label: 'Disponibilidad', val: '99.9%' }
       ],
       tags: ['React', 'TypeScript', 'Data Viz', 'State Management', 'REST APIs', 'Tailwind'],
-      image: '/images/project-automotive.jpg',
+      image: './images/project-automotive.jpg',
       bulletPoints: [
         'Diseño de interfaces analíticas ultralivianas para monitoreo continuo',
         'Consumo de microservicios y sincronización de datos en tiempo real',
@@ -124,7 +124,7 @@ export default function App() {
         { label: 'Tecnología', val: 'React + Svelte' }
       ],
       tags: ['React', 'Svelte', 'Web Crypto', 'Identity Mgmt', 'Onboarding', 'Microfrontends'],
-      image: '/images/project-identity.jpg',
+      image: './images/project-identity.jpg',
       bulletPoints: [
         'Desarrollo de módulos de verificación biométrica y autenticación robusta',
         'Optimización del funnel de onboarding reduciendo tasas de abandono',
@@ -147,7 +147,7 @@ export default function App() {
         { label: 'Type Safety', val: '100% Strict' }
       ],
       tags: ['Claude Code', 'Model Context Protocol', 'Drizzle ORM', 'Next.js App Router', 'TypeScript', 'Node.js'],
-      image: '/images/project-ai-tools.jpg',
+      image: './images/project-ai-tools.jpg',
       bulletPoints: [
         'Servidores MCP para lectura y edición semántica de repositorios locales',
         'Next.js 15+ con Drizzle ORM y base de datos PostgreSQL node-postgres',
@@ -567,7 +567,7 @@ export default function App() {
         <div className="flex items-center gap-3.5">
           <div className="relative group cursor-pointer">
             <img
-              src="/images/profile.jpg"
+              src="./images/profile.jpg"
               alt="Bruno Villavicencio"
               className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-500/40 p-[2px] transition-transform duration-300 group-hover:scale-105"
             />
@@ -631,7 +631,7 @@ export default function App() {
             <div id="cielo" className="absolute inset-0 w-full h-full">
               <img
                 ref={cieloImgRef}
-                src="/images/cosmic-sky.jpg"
+                src="./images/cosmic-sky.jpg"
                 alt="Cosmic Space"
                 className="w-full h-full object-cover will-change-transform"
               />
@@ -646,7 +646,7 @@ export default function App() {
             >
               <img
                 ref={astronautaImgRef}
-                src="/images/astronaut-cyber.png"
+                src="./images/astronaut-cyber.png"
                 alt="Astronaut Software Engineer"
                 className="w-full h-auto drop-shadow-[0_20px_50px_rgba(16,185,129,0.35)] will-change-transform"
               />
@@ -797,7 +797,7 @@ export default function App() {
             className="relative rounded-2xl overflow-hidden border border-zinc-700 shadow-2xl flex items-center justify-center will-change-transform"
           >
             <img
-              src="/images/poster-architect.jpg"
+              src="./images/poster-architect.jpg"
               alt="Architecture Poster"
               className="w-full h-full object-cover"
             />
@@ -834,7 +834,7 @@ export default function App() {
           <div ref={colLeftRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
               <img
-                src="/images/project-xcons.jpg"
+                src="./images/project-xcons.jpg"
                 alt="Dashboard XCONS"
                 className="w-full h-48 object-cover rounded-xl"
               />
@@ -856,7 +856,7 @@ export default function App() {
           <div ref={colMidRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-emerald-500/30 bg-zinc-900/80 p-5 shadow-2xl">
               <img
-                src="/images/project-automotive.jpg"
+                src="./images/project-automotive.jpg"
                 alt="Automotive Telematics"
                 className="w-full h-56 object-cover rounded-xl"
               />
@@ -865,7 +865,7 @@ export default function App() {
             </div>
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5">
               <img
-                src="/images/project-ai-tools.jpg"
+                src="./images/project-ai-tools.jpg"
                 alt="AI Tools"
                 className="w-full h-44 object-cover rounded-xl"
               />
@@ -877,7 +877,7 @@ export default function App() {
           <div ref={colRightRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
               <img
-                src="/images/project-identity.jpg"
+                src="./images/project-identity.jpg"
                 alt="Cybersecurity Identity"
                 className="w-full h-48 object-cover rounded-xl"
               />
