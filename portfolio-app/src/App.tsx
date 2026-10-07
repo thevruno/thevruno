@@ -21,6 +21,16 @@ import {
   Rocket
 } from 'lucide-react';
 
+// Direct bundler imports so Vite and GitHub Pages NEVER fail to load images
+import imgProfile from './assets/images/profile.jpg';
+import imgCosmicSky from './assets/images/cosmic-sky.jpg';
+import imgAstronaut from './assets/images/astronaut-cyber.png';
+import imgPoster from './assets/images/poster-architect.jpg';
+import imgXcons from './assets/images/project-xcons.jpg';
+import imgAutomotive from './assets/images/project-automotive.jpg';
+import imgIdentity from './assets/images/project-identity.jpg';
+import imgAiTools from './assets/images/project-ai-tools.jpg';
+
 gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
@@ -78,7 +88,7 @@ export default function App() {
         { label: 'Arquitectura', val: 'Clean SSR' }
       ],
       tags: ['React', 'TypeScript', 'Next.js', 'Claude MCP', 'Design Systems', 'Core Web Vitals'],
-      image: './images/project-xcons.jpg',
+      image: imgXcons,
       bulletPoints: [
         'Definición de estándares de ingeniería frontend y contratos API de alta fidelidad',
         'Integración en el IDE de herramientas agénticas (Claude Code) reduciendo deuda técnica',
@@ -101,7 +111,7 @@ export default function App() {
         { label: 'Disponibilidad', val: '99.9%' }
       ],
       tags: ['React', 'TypeScript', 'Data Viz', 'State Management', 'REST APIs', 'Tailwind'],
-      image: './images/project-automotive.jpg',
+      image: imgAutomotive,
       bulletPoints: [
         'Diseño de interfaces analíticas ultralivianas para monitoreo continuo',
         'Consumo de microservicios y sincronización de datos en tiempo real',
@@ -124,7 +134,7 @@ export default function App() {
         { label: 'Tecnología', val: 'React + Svelte' }
       ],
       tags: ['React', 'Svelte', 'Web Crypto', 'Identity Mgmt', 'Onboarding', 'Microfrontends'],
-      image: './images/project-identity.jpg',
+      image: imgIdentity,
       bulletPoints: [
         'Desarrollo de módulos de verificación biométrica y autenticación robusta',
         'Optimización del funnel de onboarding reduciendo tasas de abandono',
@@ -147,7 +157,7 @@ export default function App() {
         { label: 'Type Safety', val: '100% Strict' }
       ],
       tags: ['Claude Code', 'Model Context Protocol', 'Drizzle ORM', 'Next.js App Router', 'TypeScript', 'Node.js'],
-      image: './images/project-ai-tools.jpg',
+      image: imgAiTools,
       bulletPoints: [
         'Servidores MCP para lectura y edición semántica de repositorios locales',
         'Next.js 15+ con Drizzle ORM y base de datos PostgreSQL node-postgres',
@@ -238,7 +248,7 @@ export default function App() {
   // Main Lenis + GSAP Choreography
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       touchMultiplier: 1.2
@@ -260,7 +270,7 @@ export default function App() {
     const ctx = gsap.context(() => {
       /* ========================================================
          HERO SCROLL SEQUENCE (SCRUB 1)
-         Total container: 400vh (pinned)
+         Total container: 220vh (tight & cinematic, NO empty black void)
          ======================================================== */
       const heroTl = gsap.timeline({
         scrollTrigger: {
@@ -273,86 +283,86 @@ export default function App() {
         }
       });
 
-      // Set initial values (straight, fully readable, no crooked angle)
+      // Initial state
       gsap.set(artworkRef.current, {
         width: '100%',
         y: '0vh',
         rotation: 0,
         transformOrigin: 'center center'
       });
-      gsap.set(cieloImgRef.current, { scale: 1.8, transformOrigin: 'center center' });
+      gsap.set(cieloImgRef.current, { scale: 1.4, transformOrigin: 'center center' });
       gsap.set(astronautaRef.current, { yPercent: 0 });
       gsap.set(astronautaImgRef.current, {
         scale: 1,
         yPercent: 0,
+        opacity: 1,
         transformOrigin: 'center center'
       });
       gsap.set(sfondoBlackRef.current, { opacity: 0 });
       gsap.set(heroTextOverlayRef.current, { opacity: 1, y: 0 });
 
-      // Build precise Scrub timeline normalized from 0 to 100
-      // Hero text fades out smoothly during initial scroll (0 -> 18%)
+      // 0 -> 30%: Hero text fades out smoothly
       heroTl.to(
         heroTextOverlayRef.current,
         {
           opacity: 0,
-          y: -40,
-          ease: 'none',
-          duration: 18
+          y: -50,
+          ease: 'power1.in',
+          duration: 30
         },
         0
       );
 
-      // Parallax cosmic background zoom-out scale 1.8 -> 1 (0 -> 60%)
+      // 0 -> 100%: Cosmic sky gentle zoom-out
       heroTl.to(
         cieloImgRef.current,
         {
-          scale: 1,
+          scale: 1.05,
           ease: 'none',
-          duration: 60
+          duration: 100
         },
         0
       );
 
-      // Astronaut zooms in smoothly into the screen (scale 1 -> 80) and translateY -900% (35 -> 100%)
+      // 10 -> 85%: Astronaut accelerates smoothly into the camera (scale 1 -> 32, translateY -350%)
       heroTl.to(
         astronautaImgRef.current,
         {
-          scale: 80,
-          yPercent: -900,
-          ease: 'none',
-          duration: 65
+          scale: 32,
+          yPercent: -350,
+          ease: 'power2.in',
+          duration: 75
         },
-        35
+        10
       );
 
-      // Sfondo black crossfade (52 -> 62%) to cleanly transition into the next section
+      // 60 -> 90%: Smooth transition to deep slate backdrop (#0e1014) right as astronaut flies past
       heroTl.to(
         sfondoBlackRef.current,
         {
           opacity: 1,
-          ease: 'none',
-          duration: 10
+          ease: 'power1.out',
+          duration: 30
         },
-        52
+        60
       );
 
       /* ========================================================
-         #ROOTS SECTION: Word-by-word opacity scrub 0.1 -> 1
+         #ROOTS SECTION: Word-by-word opacity scrub 0.15 -> 1
          ======================================================== */
       const words = gsap.utils.toArray<HTMLElement>('.roots-word');
       gsap.fromTo(
         words,
-        { opacity: 0.1, y: 10 },
+        { opacity: 0.15, y: 8 },
         {
           opacity: 1,
           y: 0,
-          stagger: 0.05,
+          stagger: 0.04,
           ease: 'none',
           scrollTrigger: {
             trigger: rootsSectionRef.current,
             start: 'top 75%',
-            end: 'top 20%',
+            end: 'top 25%',
             scrub: 0.3
           }
         }
@@ -360,7 +370,7 @@ export default function App() {
 
       /* ========================================================
          PEACE SECTION (ROCKET LAUNCH & FAST SCRUB TEXT)
-         Pin 6000px, #rocket translate(-50%, 100% -> -50%, -50%)
+         Pin 220vh, #rocket translate(-50%, 100% -> -50%, -50%)
          ======================================================== */
       const peaceTl = gsap.timeline({
         scrollTrigger: {
@@ -372,19 +382,17 @@ export default function App() {
         }
       });
 
-      // Rocket ascent
       peaceTl.fromTo(
         peaceRocketRef.current,
-        { yPercent: 120, xPercent: -50, scale: 0.7, opacity: 0.5 },
+        { yPercent: 120, xPercent: -50, scale: 0.7, opacity: 0.4 },
         { yPercent: -50, xPercent: -50, scale: 1.1, opacity: 1, ease: 'none', duration: 70 },
         0
       );
 
-      // Marquee rapid displacement (data-scroll-speed: 4)
       peaceTl.to(
         peaceMarqueeRef.current,
         {
-          xPercent: -40,
+          xPercent: -35,
           ease: 'none',
           duration: 100
         },
@@ -392,8 +400,7 @@ export default function App() {
       );
 
       /* ========================================================
-         FIGHT / POSTER SECTION: 400vh + sticky
-         Poster expands width: 350px -> 100vw, scale 1.2 -> 3
+         FIGHT / POSTER SECTION: 220vh + sticky
          ======================================================== */
       const fightTl = gsap.timeline({
         scrollTrigger: {
@@ -407,14 +414,13 @@ export default function App() {
 
       fightTl.fromTo(
         fightPosterRef.current,
-        { width: '380px', height: '540px', scale: 1 },
-        { width: '100vw', height: '100vh', scale: 2.2, ease: 'none', duration: 100 },
+        { width: '400px', height: '560px', scale: 0.95 },
+        { width: '100vw', height: '100vh', scale: 1.6, ease: 'none', duration: 100 },
         0
       );
 
       /* ========================================================
          BRANDING 3-COLUMN ROTATE & PARALLAX
-         Rotate +-8deg individual + +-3deg col lateral + translateY -10%
          ======================================================== */
       const brandTl = gsap.timeline({
         scrollTrigger: {
@@ -427,20 +433,20 @@ export default function App() {
 
       brandTl.fromTo(
         colLeftRef.current,
-        { y: 80, rotation: -3 },
-        { y: -80, rotation: 3, ease: 'none' },
+        { y: 60, rotation: -2 },
+        { y: -60, rotation: 2, ease: 'none' },
         0
       );
       brandTl.fromTo(
         colMidRef.current,
         { y: 0, rotation: 0 },
-        { y: -120, rotation: 0, ease: 'none' },
+        { y: -100, rotation: 0, ease: 'none' },
         0
       );
       brandTl.fromTo(
         colRightRef.current,
-        { y: 100, rotation: 3 },
-        { y: -60, rotation: -3, ease: 'none' },
+        { y: 80, rotation: 2 },
+        { y: -50, rotation: -2, ease: 'none' },
         0
       );
 
@@ -526,7 +532,7 @@ export default function App() {
         <div className="flex items-center gap-3.5">
           <div className="relative group cursor-pointer">
             <img
-              src="./images/profile.jpg"
+              src={imgProfile}
               alt="Bruno Villavicencio"
               className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-500/40 p-[2px] transition-transform duration-300 group-hover:scale-105"
             />
@@ -572,42 +578,40 @@ export default function App() {
       </header>
 
       {/* ========================================================
-          HERO SECTION: 400vh PIN WITH COSMIC ZOOM
-          Sticky 100vh inner, #cielo, #astronauta, #artwork, #sfondo_black
+          HERO SECTION: 220vh PIN WITH COSMIC ZOOM (NO VOID)
           ======================================================== */}
       <section
         ref={heroPinContainerRef}
-        className="relative w-full h-[400vh] bg-black"
+        className="relative w-full h-[220vh] bg-black"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
-          {/* #artwork: full bleed, straight, fully readable */}
           <div
             ref={artworkRef}
             id="artwork"
             className="relative w-full h-full flex items-center justify-center overflow-hidden will-change-transform"
           >
-            {/* #cielo: Parallax sky zoom-out scale 1.8 -> 1 */}
+            {/* Parallax Cosmic Sky */}
             <div id="cielo" className="absolute inset-0 w-full h-full">
               <img
                 ref={cieloImgRef}
-                src="./images/cosmic-sky.jpg"
+                src={imgCosmicSky}
                 alt="Cosmic Space"
                 className="w-full h-full object-cover will-change-transform"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0e1014] via-transparent to-black/60" />
             </div>
 
-            {/* Astronauta: centered with translate(-50%, -50%), then scale 1 -> 80 */}
+            {/* Astronaut: Center with transparent background */}
             <div
               ref={astronautaRef}
               id="astronauta"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28vw] min-w-[260px] max-w-[380px] pointer-events-none z-10 will-change-transform"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[26vw] min-w-[240px] max-w-[360px] pointer-events-none z-10 will-change-transform"
             >
               <img
                 ref={astronautaImgRef}
-                src="./images/astronaut-cyber.png"
+                src={imgAstronaut}
                 alt="Astronaut Software Engineer"
-                className="w-full h-auto drop-shadow-[0_20px_50px_rgba(16,185,129,0.35)] will-change-transform"
+                className="w-full h-auto drop-shadow-[0_20px_40px_rgba(16,185,129,0.3)] will-change-transform"
               />
             </div>
 
@@ -640,29 +644,29 @@ export default function App() {
               </div>
             </div>
 
-            {/* #sfondo_black: Fades 0 -> 1 at 50%-60% to hide pixelation */}
+            {/* Seamless transition backdrop */}
             <div
               ref={sfondoBlackRef}
               id="sfondo_black"
-              className="absolute inset-0 bg-[#1b1c1e] z-30 pointer-events-none will-change-opacity"
+              className="absolute inset-0 bg-[#0e1014] z-30 pointer-events-none will-change-opacity"
             />
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          #ROOTS SECTION: Background #1b1c1e, margin-top: -20px, z-index: 2
-          Word-by-word reveal (opacity 0.1 -> 1)
+          #ROOTS SECTION: Seamless overlap with #0e1014
+          Word-by-word reveal (opacity 0.15 -> 1)
           ======================================================== */}
       <section
         id="roots"
         ref={rootsSectionRef}
-        className="relative z-20 bg-[#1b1c1e] -mt-5 pt-32 pb-36 px-6 sm:px-14 border-b border-zinc-800"
+        className="relative z-20 bg-[#0e1014] -mt-2 pt-24 pb-32 px-6 sm:px-14 border-b border-zinc-800"
       >
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">
-              01 // ROOTS & MANIFIESTO
+              01 // PERFIL & MANIFIESTO
             </span>
             <span className="text-zinc-500 text-xs font-mono">| REVELADO PALABRA POR PALABRA</span>
           </div>
@@ -700,15 +704,13 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          PEACE SECTION: 6000px PIN + Sticky 100vh
-          #rocket translates from bottom to center + rapid text marquee
+          PEACE SECTION: ROCKET LAUNCH & MARQUEE
           ======================================================== */}
       <section
         ref={peacePinSectionRef}
-        className="relative w-full h-[6000px] bg-[#0d0e12] overflow-hidden"
+        className="relative w-full h-[220vh] bg-[#090a0d] overflow-hidden"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
-          {/* Background fast marquee speed 4 */}
           <div
             ref={peaceMarqueeRef}
             className="absolute whitespace-nowrap text-[18vw] font-black uppercase text-white/[0.04] select-none tracking-tighter will-change-transform"
@@ -716,7 +718,6 @@ export default function App() {
             REACT TYPESCRIPT NEXTJS CLAUDE CODE MCP ARCHITECTURE LEADERSHIP
           </div>
 
-          {/* Central Rocket / Misil with glowing aura */}
           <div
             ref={peaceRocketRef}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 will-change-transform"
@@ -743,12 +744,11 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          FIGHT SECTION: 400vh + Sticky 100vh
-          Poster expands from 380px to full viewport + scale
+          FIGHT SECTION: POSTER EXPANDS
           ======================================================== */}
       <section
         ref={fightPinSectionRef}
-        className="relative w-full h-[400vh] bg-black"
+        className="relative w-full h-[220vh] bg-black"
       >
         <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
           <div
@@ -756,13 +756,13 @@ export default function App() {
             className="relative rounded-2xl overflow-hidden border border-zinc-700 shadow-2xl flex items-center justify-center will-change-transform"
           >
             <img
-              src="./images/poster-architect.jpg"
+              src={imgPoster}
               alt="Architecture Poster"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
               <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-black/70 px-4 py-1.5 rounded-full border border-emerald-500/30">
-                MANIFESTO POSTER // 2026
+                MANIFESTO // 2026
               </span>
               <h2 className="text-5xl sm:text-7xl font-black uppercase text-white mt-4 tracking-tighter">
                 ARQUITECTURA <br /> LIMPIA
@@ -773,7 +773,7 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          BRANDING SECTION: 3 COLUMNS ROTATING +-8deg & +-3deg
+          BRANDING SECTION: 3 COLUMNS
           ======================================================== */}
       <section
         ref={brandingSectionRef}
@@ -789,11 +789,10 @@ export default function App() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Col 1: rotate -3deg */}
           <div ref={colLeftRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
               <img
-                src="./images/project-xcons.jpg"
+                src={imgXcons}
                 alt="Dashboard XCONS"
                 className="w-full h-48 object-cover rounded-xl"
               />
@@ -811,11 +810,10 @@ export default function App() {
             </div>
           </div>
 
-          {/* Col 2: center translateY -10% */}
           <div ref={colMidRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-emerald-500/30 bg-zinc-900/80 p-5 shadow-2xl">
               <img
-                src="./images/project-automotive.jpg"
+                src={imgAutomotive}
                 alt="Automotive Telematics"
                 className="w-full h-56 object-cover rounded-xl"
               />
@@ -824,7 +822,7 @@ export default function App() {
             </div>
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5">
               <img
-                src="./images/project-ai-tools.jpg"
+                src={imgAiTools}
                 alt="AI Tools"
                 className="w-full h-44 object-cover rounded-xl"
               />
@@ -832,11 +830,10 @@ export default function App() {
             </div>
           </div>
 
-          {/* Col 3: rotate +3deg */}
           <div ref={colRightRef} className="space-y-6 will-change-transform">
             <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
               <img
-                src="./images/project-identity.jpg"
+                src={imgIdentity}
                 alt="Cybersecurity Identity"
                 className="w-full h-48 object-cover rounded-xl"
               />
