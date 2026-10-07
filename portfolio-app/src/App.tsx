@@ -12,16 +12,13 @@ import {
   Phone,
   Briefcase,
   GraduationCap,
-  Sparkles,
   Layers,
   ChevronDown,
   CheckCircle2,
   Copy,
-  ArrowRight,
   Rocket
 } from 'lucide-react';
 
-// Direct bundler imports so Vite and GitHub Pages NEVER fail to load images
 import imgProfile from './assets/images/profile.jpg';
 import imgCosmicSky from './assets/images/cosmic-sky.jpg';
 import imgAstronaut from './assets/images/astronaut-cyber.png';
@@ -40,7 +37,7 @@ export default function App() {
   const [cursorActive, setCursorActive] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-  // References for Hero Scroll Sequence
+  // References
   const heroPinContainerRef = useRef<HTMLDivElement>(null);
   const artworkRef = useRef<HTMLDivElement>(null);
   const cieloImgRef = useRef<HTMLImageElement>(null);
@@ -49,7 +46,6 @@ export default function App() {
   const sfondoBlackRef = useRef<HTMLDivElement>(null);
   const heroTextOverlayRef = useRef<HTMLDivElement>(null);
 
-  // Other section refs
   const rootsSectionRef = useRef<HTMLDivElement>(null);
   const peacePinSectionRef = useRef<HTMLDivElement>(null);
   const peaceRocketRef = useRef<HTMLDivElement>(null);
@@ -61,7 +57,6 @@ export default function App() {
   const colMidRef = useRef<HTMLDivElement>(null);
   const colRightRef = useRef<HTMLDivElement>(null);
 
-  // Horizontal pinned projects
   const horizontalSectionRef = useRef<HTMLDivElement>(null);
   const horizontalWrapperRef = useRef<HTMLDivElement>(null);
   const progressLineRef = useRef<HTMLDivElement>(null);
@@ -81,7 +76,7 @@ export default function App() {
       category: 'Enterprise Platform · AI-First Architecture',
       title: 'Plataforma Web Empresarial & Metodología AI-First',
       summary:
-        'Liderazgo frontend en arquitectura con React y TypeScript. Definición de contratos de API escalables con backend, optimización de performance en flujos críticos y adopción pionera de Claude Code y MCPs para automatizar ciclos de desarrollo y code reviews.',
+        'Liderazgo frontend en React y TypeScript con arquitectura modular y contratos de API escalables.',
       stats: [
         { label: 'Tiempo de Carga', val: '-42%' },
         { label: 'Integración', val: 'Claude + MCP' },
@@ -104,7 +99,7 @@ export default function App() {
       category: 'Big Data & Telematics Visualization',
       title: 'Ecosistema de Analítica Automotriz & Telemetría',
       summary:
-        'Plataforma integral de procesamiento masivo y visualización en tiempo real de datos vehiculares en América Latina. Creación de bibliotecas de componentes reutilizables con soporte para streaming de telemetría y gráficos interactivos.',
+        'Procesamiento masivo y visualización en tiempo real de datos vehiculares en América Latina.',
       stats: [
         { label: 'Procesamiento', val: '+15M datos' },
         { label: 'Componentes', val: 'Sistema Modular' },
@@ -127,7 +122,7 @@ export default function App() {
       category: 'Cybersecurity & Biometric Identity',
       title: 'Plataformas de Autenticación & Seguridad Digital',
       summary:
-        'Desarrollo y mantenimiento de interfaces críticas para validación de identidad digital y prevención de fraudes bancarios. Implementación en React y Svelte con exigencias extremas de accesibilidad y tolerancia cero a fallos.',
+        'Interfaces críticas para validación de identidad digital y prevención de fraudes bancarios.',
       stats: [
         { label: 'Seguridad', val: 'Zero-Trust' },
         { label: 'SLA', val: '99.98% Uptime' },
@@ -150,7 +145,7 @@ export default function App() {
       category: 'Agentic Tooling, MCP & Next.js',
       title: 'Laboratorio Agéntico: Model Context Protocol & Auto-Crawl',
       summary:
-        'Entorno de experimentación para sistemas agénticos avanzados. Conexión de Claude Code a bases de datos vía MCP, rastreo web autónomo de contenidos (Auto-Blog), orquestación de agentes locales y pipelines de código automatizados.',
+        'Sistemas agénticos conectados a bases de datos vía MCP con orquestación y pipelines modernos.',
       stats: [
         { label: 'Velocidad', val: 'x3 Prototipado' },
         { label: 'Protocolo', val: 'MCP Nativo' },
@@ -245,10 +240,12 @@ export default function App() {
     return () => window.removeEventListener('mousemove', onMouseMove);
   }, []);
 
-  // Main Lenis + GSAP Choreography
+  // Main Lenis + GSAP ScrollTrigger Integration
   useEffect(() => {
+    // Lenis smooth scroll with unified lerp 0.09 as specified in T4
     const lenis = new Lenis({
       duration: 1.1,
+      lerp: 0.09,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       touchMultiplier: 1.2
@@ -267,93 +264,43 @@ export default function App() {
       }
     });
 
-    const ctx = gsap.context(() => {
-      /* ========================================================
-         HERO SCROLL SEQUENCE (SCRUB 1)
-         Total container: 220vh (tight & cinematic, NO empty black void)
-         ======================================================== */
+    const mm = gsap.matchMedia();
+
+    // DESKTOP ANIMATIONS (>= 768px)
+    mm.add('(min-width: 768px)', () => {
+      // 1. HERO PIN (T1: end: "+=200%", no 400vh gap)
       const heroTl = gsap.timeline({
         scrollTrigger: {
           trigger: heroPinContainerRef.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: '+=200%',
           scrub: 1,
           pin: true,
           anticipatePin: 1
         }
       });
 
-      // Initial state
-      gsap.set(artworkRef.current, {
-        width: '100%',
-        y: '0vh',
-        rotation: 0,
-        transformOrigin: 'center center'
-      });
-      gsap.set(cieloImgRef.current, { scale: 1.4, transformOrigin: 'center center' });
+      gsap.set(artworkRef.current, { width: '100%', y: '0vh', rotation: 0 });
+      gsap.set(cieloImgRef.current, { scale: 1.4 });
       gsap.set(astronautaRef.current, { yPercent: 0 });
-      gsap.set(astronautaImgRef.current, {
-        scale: 1,
-        yPercent: 0,
-        opacity: 1,
-        transformOrigin: 'center center'
-      });
+      gsap.set(astronautaImgRef.current, { scale: 1, yPercent: 0 });
       gsap.set(sfondoBlackRef.current, { opacity: 0 });
       gsap.set(heroTextOverlayRef.current, { opacity: 1, y: 0 });
 
-      // 0 -> 30%: Hero text fades out smoothly
-      heroTl.to(
-        heroTextOverlayRef.current,
-        {
-          opacity: 0,
-          y: -50,
-          ease: 'power1.in',
-          duration: 30
-        },
-        0
-      );
+      // Smooth fadeout of text (0 -> 25%)
+      heroTl.to(heroTextOverlayRef.current, { opacity: 0, y: -40, ease: 'none', duration: 25 }, 0);
+      // Gentle cosmic sky zoom-out (0 -> 100%)
+      heroTl.to(cieloImgRef.current, { scale: 1.05, ease: 'none', duration: 100 }, 0);
+      // Zoom astronaut into screen (scale 1 -> 45) (15 -> 90%)
+      heroTl.to(astronautaImgRef.current, { scale: 45, yPercent: -450, ease: 'none', duration: 75 }, 15);
+      // Sfondo dark crossfade (70 -> 90%) to cleanly blend into roots
+      heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'none', duration: 20 }, 70);
 
-      // 0 -> 100%: Cosmic sky gentle zoom-out
-      heroTl.to(
-        cieloImgRef.current,
-        {
-          scale: 1.05,
-          ease: 'none',
-          duration: 100
-        },
-        0
-      );
-
-      // 10 -> 85%: Astronaut accelerates smoothly into the camera (scale 1 -> 32, translateY -350%)
-      heroTl.to(
-        astronautaImgRef.current,
-        {
-          scale: 32,
-          yPercent: -350,
-          ease: 'power2.in',
-          duration: 75
-        },
-        10
-      );
-
-      // 60 -> 90%: Smooth transition to deep slate backdrop (#0e1014) right as astronaut flies past
-      heroTl.to(
-        sfondoBlackRef.current,
-        {
-          opacity: 1,
-          ease: 'power1.out',
-          duration: 30
-        },
-        60
-      );
-
-      /* ========================================================
-         #ROOTS SECTION: Word-by-word opacity scrub 0.15 -> 1
-         ======================================================== */
+      // 2. ROOTS WORD REVEAL
       const words = gsap.utils.toArray<HTMLElement>('.roots-word');
       gsap.fromTo(
         words,
-        { opacity: 0.15, y: 8 },
+        { opacity: 0.15, y: 6 },
         {
           opacity: 1,
           y: 0,
@@ -362,21 +309,18 @@ export default function App() {
           scrollTrigger: {
             trigger: rootsSectionRef.current,
             start: 'top 75%',
-            end: 'top 25%',
-            scrub: 0.3
+            end: 'top 20%',
+            scrub: 1
           }
         }
       );
 
-      /* ========================================================
-         PEACE SECTION (ROCKET LAUNCH & FAST SCRUB TEXT)
-         Pin 220vh, #rocket translate(-50%, 100% -> -50%, -50%)
-         ======================================================== */
+      // 3. PEACE MANIFIESTO PIN (T1: end: "+=300%", no 6000px gap)
       const peaceTl = gsap.timeline({
         scrollTrigger: {
           trigger: peacePinSectionRef.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: '+=300%',
           pin: true,
           scrub: 1
         }
@@ -384,29 +328,18 @@ export default function App() {
 
       peaceTl.fromTo(
         peaceRocketRef.current,
-        { yPercent: 120, xPercent: -50, scale: 0.7, opacity: 0.4 },
-        { yPercent: -50, xPercent: -50, scale: 1.1, opacity: 1, ease: 'none', duration: 70 },
+        { yPercent: 120, xPercent: -50, scale: 0.8 },
+        { yPercent: -50, xPercent: -50, scale: 1.1, ease: 'none', duration: 75 },
         0
       );
+      peaceTl.to(peaceMarqueeRef.current, { xPercent: -35, ease: 'none', duration: 100 }, 0);
 
-      peaceTl.to(
-        peaceMarqueeRef.current,
-        {
-          xPercent: -35,
-          ease: 'none',
-          duration: 100
-        },
-        0
-      );
-
-      /* ========================================================
-         FIGHT / POSTER SECTION: 220vh + sticky
-         ======================================================== */
+      // 4. FIGHT / POSTERS PIN (T1: end: "+=200%")
       const fightTl = gsap.timeline({
         scrollTrigger: {
           trigger: fightPinSectionRef.current,
           start: 'top top',
-          end: 'bottom bottom',
+          end: '+=200%',
           pin: true,
           scrub: 1
         }
@@ -414,66 +347,40 @@ export default function App() {
 
       fightTl.fromTo(
         fightPosterRef.current,
-        { width: '400px', height: '560px', scale: 0.95 },
-        { width: '100vw', height: '100vh', scale: 1.6, ease: 'none', duration: 100 },
+        { width: '420px', height: '560px', scale: 0.95 },
+        { width: '100vw', height: '100vh', scale: 1.5, ease: 'none', duration: 100 },
         0
       );
 
-      /* ========================================================
-         BRANDING 3-COLUMN ROTATE & PARALLAX
-         ======================================================== */
+      // 5. BRANDING SECTION PARALLAX
       const brandTl = gsap.timeline({
         scrollTrigger: {
           trigger: brandingSectionRef.current,
-          start: 'top 90%',
-          end: 'bottom 10%',
+          start: 'top 85%',
+          end: 'bottom 15%',
           scrub: 1
         }
       });
+      brandTl.fromTo(colLeftRef.current, { y: 40, rotation: -2 }, { y: -40, rotation: 2, ease: 'none' }, 0);
+      brandTl.fromTo(colMidRef.current, { y: 0 }, { y: -70, ease: 'none' }, 0);
+      brandTl.fromTo(colRightRef.current, { y: 50, rotation: 2 }, { y: -30, rotation: -2, ease: 'none' }, 0);
 
-      brandTl.fromTo(
-        colLeftRef.current,
-        { y: 60, rotation: -2 },
-        { y: -60, rotation: 2, ease: 'none' },
-        0
-      );
-      brandTl.fromTo(
-        colMidRef.current,
-        { y: 0, rotation: 0 },
-        { y: -100, rotation: 0, ease: 'none' },
-        0
-      );
-      brandTl.fromTo(
-        colRightRef.current,
-        { y: 80, rotation: 2 },
-        { y: -50, rotation: -2, ease: 'none' },
-        0
-      );
-
-      /* ========================================================
-         PINNED HORIZONTAL PROJECT SHOWCASE
-         ======================================================== */
+      // 6. PROYECTOS HORIZONTAL PIN (T1: end: "+=3000")
       const wrapper = horizontalWrapperRef.current;
       const section = horizontalSectionRef.current;
       if (wrapper && section) {
         const totalSlides = projects.length;
-        const xDistance = () => -(wrapper.scrollWidth - window.innerWidth);
-
         gsap.to(wrapper, {
-          x: xDistance,
+          x: () => -(wrapper.scrollWidth - window.innerWidth),
           ease: 'none',
           scrollTrigger: {
             trigger: section,
             pin: true,
-            scrub: 0.6,
-            start: 'top top',
-            end: () => `+=${wrapper.scrollWidth - window.innerWidth}`,
+            scrub: 1,
+            end: '+=3000',
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              const current = Math.min(
-                Math.floor(self.progress * totalSlides),
-                totalSlides - 1
-              );
+              const current = Math.min(Math.floor(self.progress * totalSlides), totalSlides - 1);
               setCurrentSlideIndex(current);
             }
           }
@@ -481,8 +388,27 @@ export default function App() {
       }
     });
 
+    // MOBILE ADAPTATION (< 768px): T4 - No horizontal, normal flow, gentle scale
+    mm.add('(max-width: 767px)', () => {
+      const heroTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroPinContainerRef.current,
+          start: 'top top',
+          end: '+=100%',
+          scrub: 1,
+          pin: true
+        }
+      });
+      heroTl.to(heroTextOverlayRef.current, { opacity: 0, y: -30, ease: 'none', duration: 30 }, 0);
+      heroTl.to(astronautaImgRef.current, { scale: 8, yPercent: -150, ease: 'none', duration: 70 }, 15);
+      heroTl.to(sfondoBlackRef.current, { opacity: 1, ease: 'none', duration: 25 }, 65);
+    });
+
+    // Refresh triggers after assets/fonts load
+    ScrollTrigger.refresh();
+
     return () => {
-      ctx.revert();
+      mm.revert();
       gsap.ticker.remove(tickerCallback);
       lenis.destroy();
     };
@@ -501,7 +427,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070709] text-zinc-100 selection:bg-emerald-400 selection:text-black relative">
+    <div className="min-h-screen bg-[#000000] text-zinc-100 selection:bg-emerald-400 selection:text-black relative">
       {/* Interactive Cursor */}
       <div
         className={`fixed top-0 left-0 w-8 h-8 rounded-full border border-emerald-400 pointer-events-none z-50 transition-transform duration-100 ease-out hidden md:flex items-center justify-center ${
@@ -528,7 +454,7 @@ export default function App() {
       </div>
 
       {/* Minimal Floating Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#070709]/80 border-b border-zinc-800/50 px-6 sm:px-12 py-4 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-[#000000]/80 border-b border-zinc-800/50 px-6 sm:px-12 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3.5">
           <div className="relative group cursor-pointer">
             <img
@@ -536,7 +462,7 @@ export default function App() {
               alt="Bruno Villavicencio"
               className="w-10 h-10 rounded-full object-cover ring-2 ring-emerald-500/40 p-[2px] transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-[#070709]" />
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-[#000000]" />
           </div>
           <div>
             <div className="text-sm font-bold tracking-tight text-white flex items-center gap-2">
@@ -578,100 +504,99 @@ export default function App() {
       </header>
 
       {/* ========================================================
-          HERO SECTION: 220vh PIN WITH COSMIC ZOOM (NO VOID)
+          1. HERO SECTION: #000000 background, Sticky 100vh
+          T1: end "+=200%", no 400vh gap, blends with #1b1c1e
           ======================================================== */}
       <section
         ref={heroPinContainerRef}
-        className="relative w-full h-[220vh] bg-black"
+        className="relative w-full h-screen bg-[#000000] overflow-hidden"
       >
-        <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+        <div
+          ref={artworkRef}
+          id="artwork"
+          className="relative w-full h-full flex items-center justify-center overflow-hidden will-change-transform"
+        >
+          {/* Cosmic Sky background */}
+          <div id="cielo" className="absolute inset-0 w-full h-full">
+            <img
+              ref={cieloImgRef}
+              src={imgCosmicSky}
+              alt="Cosmic Space"
+              className="w-full h-full object-cover will-change-transform"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1b1c1e] via-black/40 to-black/70" />
+          </div>
+
+          {/* Astronaut with Bruno's Face inside illuminated helmet */}
           <div
-            ref={artworkRef}
-            id="artwork"
-            className="relative w-full h-full flex items-center justify-center overflow-hidden will-change-transform"
+            ref={astronautaRef}
+            id="astronauta"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28vw] min-w-[260px] max-w-[390px] pointer-events-none z-10 will-change-transform"
           >
-            {/* Parallax Cosmic Sky */}
-            <div id="cielo" className="absolute inset-0 w-full h-full">
-              <img
-                ref={cieloImgRef}
-                src={imgCosmicSky}
-                alt="Cosmic Space"
-                className="w-full h-full object-cover will-change-transform"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0e1014] via-transparent to-black/60" />
-            </div>
-
-            {/* Astronaut: Center with transparent background */}
-            <div
-              ref={astronautaRef}
-              id="astronauta"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[26vw] min-w-[240px] max-w-[360px] pointer-events-none z-10 will-change-transform"
-            >
-              <img
-                ref={astronautaImgRef}
-                src={imgAstronaut}
-                alt="Astronaut Software Engineer"
-                className="w-full h-auto drop-shadow-[0_20px_40px_rgba(16,185,129,0.3)] will-change-transform"
-              />
-            </div>
-
-            {/* Initial Hero Typography Overlay */}
-            <div
-              ref={heroTextOverlayRef}
-              className="absolute inset-0 z-20 flex flex-col justify-between p-8 sm:p-16 pointer-events-none max-w-7xl mx-auto"
-            >
-              <div className="pt-24">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/70 border border-emerald-500/40 text-emerald-400 text-xs font-mono backdrop-blur-md">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  <span>SOFTWARE ENGINEER LEAD · FULLSTACK & AI-FIRST</span>
-                </div>
-              </div>
-
-              <div>
-                <h1 className="text-6xl sm:text-8xl lg:text-9xl font-black uppercase tracking-tighter text-white leading-[0.88]">
-                  BRUNO <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
-                    VILLAVICENCIO
-                  </span>
-                </h1>
-                <p className="mt-4 text-sm sm:text-xl font-mono text-zinc-300 max-w-xl">
-                  React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
-                </p>
-                <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-400 animate-bounce">
-                  <ChevronDown className="w-4 h-4" />
-                  <span>DESPLÁZATE HACIA ABAJO PARA EXPLORAR</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Seamless transition backdrop */}
-            <div
-              ref={sfondoBlackRef}
-              id="sfondo_black"
-              className="absolute inset-0 bg-[#0e1014] z-30 pointer-events-none will-change-opacity"
+            <img
+              ref={astronautaImgRef}
+              src={imgAstronaut}
+              alt="Bruno Cyber Astronaut Software Engineer"
+              className="w-full h-auto drop-shadow-[0_25px_50px_rgba(16,185,129,0.35)] will-change-transform"
             />
           </div>
+
+          {/* Hero Typography with dark backing card for maximum contrast */}
+          <div
+            ref={heroTextOverlayRef}
+            className="absolute inset-0 z-20 flex flex-col justify-between p-8 sm:p-16 pointer-events-none max-w-7xl mx-auto"
+          >
+            <div className="pt-20">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/80 border border-emerald-500/40 text-emerald-400 text-xs font-mono backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>SOFTWARE ENGINEER LEAD · FULLSTACK & AI-FIRST</span>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-10 rounded-3xl bg-black/60 backdrop-blur-md border border-zinc-800/80 max-w-4xl">
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-white leading-[0.9] [text-wrap:balance]">
+                BRUNO <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-white">
+                  VILLAVICENCIO
+                </span>
+              </h1>
+              <p className="mt-4 text-base sm:text-xl font-normal text-zinc-200 leading-relaxed max-w-[65ch]">
+                React · TypeScript · Next.js · Arquitecturas Web Escalables · MCP & Claude Code
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-xs font-mono text-emerald-400 animate-bounce">
+                <ChevronDown className="w-4 h-4" />
+                <span>DESPLÁZATE HACIA ABAJO PARA EXPLORAR</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sfondo crossfade into roots #1b1c1e */}
+          <div
+            ref={sfondoBlackRef}
+            id="sfondo_black"
+            className="absolute inset-0 bg-[#1b1c1e] z-30 pointer-events-none will-change-opacity"
+          />
         </div>
       </section>
 
       {/* ========================================================
-          #ROOTS SECTION: Seamless overlap with #0e1014
-          Word-by-word reveal (opacity 0.15 -> 1)
+          2. #ROOTS SECTION: Background #1b1c1e, -margin-top -20px
+          T2/T3: High contrast text-zinc-200, py-20, no gaps
           ======================================================== */}
       <section
         id="roots"
         ref={rootsSectionRef}
-        className="relative z-20 bg-[#0e1014] -mt-2 pt-24 pb-32 px-6 sm:px-14 border-b border-zinc-800"
+        className="relative z-20 bg-[#1b1c1e] -mt-5 pt-24 pb-24 px-6 sm:px-14 border-b border-zinc-800"
       >
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">
               01 // PERFIL & MANIFIESTO
             </span>
-            <span className="text-zinc-500 text-xs font-mono">| REVELADO PALABRA POR PALABRA</span>
+            <span className="text-zinc-400 text-xs font-mono">| REVELADO DINÁMICO</span>
           </div>
 
-          <p className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+          <p className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-relaxed [text-wrap:balance]">
             {rootsBio.map((word, idx) => (
               <span
                 key={idx}
@@ -682,75 +607,74 @@ export default function App() {
             ))}
           </p>
 
-          <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-12 border-t border-zinc-700/60 font-mono">
-            <div>
-              <div className="text-4xl font-black text-emerald-400">+8 Años</div>
-              <div className="text-xs uppercase text-zinc-400 mt-1">Experiencia Full</div>
+          <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-10 border-t border-zinc-700/60 font-mono">
+            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
+              <div className="text-3xl sm:text-4xl font-black text-emerald-400">+8 Años</div>
+              <div className="text-xs uppercase text-zinc-300 mt-1">Experiencia Full</div>
             </div>
-            <div>
-              <div className="text-4xl font-black text-white">Lead</div>
-              <div className="text-xs uppercase text-zinc-400 mt-1">Rol en XCONS</div>
+            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
+              <div className="text-3xl sm:text-4xl font-black text-white">Lead</div>
+              <div className="text-xs uppercase text-zinc-300 mt-1">Rol en XCONS</div>
             </div>
-            <div>
-              <div className="text-4xl font-black text-teal-300">AI-1st</div>
-              <div className="text-xs uppercase text-zinc-400 mt-1">Claude Code & MCP</div>
+            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
+              <div className="text-3xl sm:text-4xl font-black text-teal-300">AI-1st</div>
+              <div className="text-xs uppercase text-zinc-300 mt-1">Claude Code & MCP</div>
             </div>
-            <div>
-              <div className="text-4xl font-black text-white">Córdoba</div>
-              <div className="text-xs uppercase text-zinc-400 mt-1">Argentina</div>
+            <div className="p-4 rounded-xl bg-black/30 border border-zinc-800">
+              <div className="text-3xl sm:text-4xl font-black text-white">Córdoba</div>
+              <div className="text-xs uppercase text-zinc-300 mt-1">Argentina</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          PEACE SECTION: ROCKET LAUNCH & MARQUEE
+          3. PEACE / MANIFIESTO: Background #f5f5f5 (T2: Light Rhythm)
+          Dark text on light background to break black-on-black fatigue
           ======================================================== */}
       <section
         ref={peacePinSectionRef}
-        className="relative w-full h-[220vh] bg-[#090a0d] overflow-hidden"
+        className="relative w-full h-screen bg-[#f5f5f5] text-[#1b1c1e] overflow-hidden"
       >
-        <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+        <div className="sticky top-0 w-full h-full flex flex-col items-center justify-center">
           <div
             ref={peaceMarqueeRef}
-            className="absolute whitespace-nowrap text-[18vw] font-black uppercase text-white/[0.04] select-none tracking-tighter will-change-transform"
+            className="absolute whitespace-nowrap text-[18vw] font-black uppercase text-zinc-900/[0.06] select-none tracking-tighter will-change-transform"
           >
             REACT TYPESCRIPT NEXTJS CLAUDE CODE MCP ARCHITECTURE LEADERSHIP
           </div>
 
           <div
             ref={peaceRocketRef}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 will-change-transform"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-10 will-change-transform text-center px-6 max-w-3xl"
           >
-            <div className="relative">
-              <div className="w-36 h-36 rounded-full bg-emerald-500/20 blur-2xl absolute inset-0 m-auto animate-pulse" />
-              <div className="w-24 h-24 rounded-2xl bg-zinc-900 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 shadow-[0_0_50px_rgba(16,185,129,0.5)]">
+            <div className="relative mb-6">
+              <div className="w-28 h-28 rounded-3xl bg-emerald-600/10 border-2 border-emerald-600 flex items-center justify-center text-emerald-600 shadow-xl">
                 <Rocket className="w-12 h-12 -rotate-45" />
               </div>
             </div>
-            <div className="mt-8 text-center">
-              <span className="text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400">
-                VELOCIDAD DE EJECUCIÓN AGÉNTICA
-              </span>
-              <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-3">
-                De Cero a Producción
-              </h2>
-              <p className="text-zinc-400 text-sm max-w-md mx-auto mt-2 font-mono">
-                Flujos automatizados que aceleran refactors, pruebas y despliegue sin perder robustez.
-              </p>
-            </div>
+            <span className="text-xs font-mono uppercase tracking-widest px-4 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold">
+              VELOCIDAD DE EJECUCIÓN AGÉNTICA
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#1b1c1e] mt-4">
+              De Cero a Producción
+            </h2>
+            <p className="text-zinc-700 text-base sm:text-lg font-normal leading-relaxed mt-3 max-w-[65ch]">
+              Flujos automatizados asistidos por Claude Code y MCPs que aceleran refactorizaciones, pruebas y despliegues sin perder rigurosidad técnica.
+            </p>
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          FIGHT SECTION: POSTER EXPANDS
+          4. FIGHT / POSTERS: Background #000000
+          T1: end "+=200%", high contrast poster
           ======================================================== */}
       <section
         ref={fightPinSectionRef}
-        className="relative w-full h-[220vh] bg-black"
+        className="relative w-full h-screen bg-[#000000] overflow-hidden"
       >
-        <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center">
+        <div className="sticky top-0 w-full h-full flex items-center justify-center">
           <div
             ref={fightPosterRef}
             className="relative rounded-2xl overflow-hidden border border-zinc-700 shadow-2xl flex items-center justify-center will-change-transform"
@@ -760,8 +684,8 @@ export default function App() {
               alt="Architecture Poster"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
-              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-black/70 px-4 py-1.5 rounded-full border border-emerald-500/30">
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-xs flex flex-col items-center justify-center p-8 text-center">
+              <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 bg-black/80 px-4 py-1.5 rounded-full border border-emerald-500/40">
                 MANIFESTO // 2026
               </span>
               <h2 className="text-5xl sm:text-7xl font-black uppercase text-white mt-4 tracking-tighter">
@@ -773,114 +697,41 @@ export default function App() {
       </section>
 
       {/* ========================================================
-          BRANDING SECTION: 3 COLUMNS
-          ======================================================== */}
-      <section
-        ref={brandingSectionRef}
-        className="py-32 px-6 sm:px-12 bg-[#090a0d] border-y border-zinc-800 overflow-hidden"
-      >
-        <div className="max-w-7xl mx-auto mb-16 text-center">
-          <span className="text-xs font-mono uppercase text-emerald-400 tracking-wider">
-            02 // PERSPECTIVA Y MODULARIDAD
-          </span>
-          <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-2">
-            Multi-Dispositivo & Escalabilidad
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div ref={colLeftRef} className="space-y-6 will-change-transform">
-            <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
-              <img
-                src={imgXcons}
-                alt="Dashboard XCONS"
-                className="w-full h-48 object-cover rounded-xl"
-              />
-              <div className="mt-4 font-mono text-xs text-emerald-400">01. ENTERPRISE CORE</div>
-              <h4 className="text-lg font-bold text-white mt-1">XCONS React Architecture</h4>
-            </div>
-            <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5">
-              <div className="p-6 bg-black/40 rounded-xl font-mono text-xs text-zinc-400">
-                {`> const lead = new Engineer({
-    role: "Lead",
-    focus: "Performance",
-    aiAssisted: true
-  });`}
-              </div>
-            </div>
-          </div>
-
-          <div ref={colMidRef} className="space-y-6 will-change-transform">
-            <div className="rounded-2xl overflow-hidden border border-emerald-500/30 bg-zinc-900/80 p-5 shadow-2xl">
-              <img
-                src={imgAutomotive}
-                alt="Automotive Telematics"
-                className="w-full h-56 object-cover rounded-xl"
-              />
-              <div className="mt-4 font-mono text-xs text-emerald-400">02. TELEMETRÍA LATAM</div>
-              <h4 className="text-lg font-bold text-white mt-1">Promotive Data Stream</h4>
-            </div>
-            <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5">
-              <img
-                src={imgAiTools}
-                alt="AI Tools"
-                className="w-full h-44 object-cover rounded-xl"
-              />
-              <div className="mt-3 font-mono text-xs text-zinc-400">03. MCP Workflows</div>
-            </div>
-          </div>
-
-          <div ref={colRightRef} className="space-y-6 will-change-transform">
-            <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 group hover:border-emerald-500/40 transition-colors">
-              <img
-                src={imgIdentity}
-                alt="Cybersecurity Identity"
-                className="w-full h-48 object-cover rounded-xl"
-              />
-              <div className="mt-4 font-mono text-xs text-emerald-400">04. IDENTITY ZERO TRUST</div>
-              <h4 className="text-lg font-bold text-white mt-1">VU Inc. Security Flow</h4>
-            </div>
-            <div className="rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/60 p-5 text-center">
-              <div className="text-3xl font-black font-mono text-emerald-400">+8 Años</div>
-              <div className="text-xs font-mono text-zinc-400 mt-1">Construyendo la web moderna</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========================================================
-          SELECTED WORKS PINNED HORIZONTAL GALLERY
+          5. PROYECTOS: Background #0d0e12
+          T1/T3: 1 línea + 3 métricas grandes, navegable
           ======================================================== */}
       <section
         id="proyectos"
         ref={horizontalSectionRef}
-        className="relative w-full h-screen overflow-hidden bg-[#070709] border-b border-zinc-800/80"
+        className="relative w-full md:h-screen overflow-hidden bg-[#0d0e12] border-b border-zinc-800/80"
       >
-        <div className="absolute top-20 left-6 sm:left-12 right-6 sm:right-12 z-30 flex items-center justify-between pointer-events-none">
+        <div className="hidden md:flex absolute top-20 left-6 sm:left-12 right-6 sm:right-12 z-30 items-center justify-between pointer-events-none">
           <div className="flex items-center gap-3">
             <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">
-              03 // CASOS DE ESTUDIO
+              02 // CASOS DE ESTUDIO
             </span>
-            <span className="text-zinc-600 font-mono text-xs">| SCROLL HORIZONTAL COMPLETO</span>
+            <span className="text-zinc-400 font-mono text-xs">| SCROLL HORIZONTAL</span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs">
-            <span className="text-emerald-400 font-bold text-base">0{currentSlideIndex + 1}</span>
+          <div className="flex items-center gap-2 font-mono text-sm bg-black/60 px-3 py-1 rounded-full border border-zinc-800">
+            <span className="text-emerald-400 font-bold">0{currentSlideIndex + 1}</span>
             <span className="text-zinc-600">/</span>
             <span className="text-zinc-400">0{projects.length}</span>
           </div>
         </div>
 
+        {/* Horizontal Container (Stacked on mobile <768px, pinned horizontal on desktop) */}
         <div
           ref={horizontalWrapperRef}
-          className="flex h-full w-max items-center will-change-transform"
+          className="flex flex-col md:flex-row h-auto md:h-full w-full md:w-max items-center will-change-transform py-16 md:py-0"
         >
           {projects.map((p) => (
             <div
               key={p.id}
-              className="w-screen h-screen flex-shrink-0 flex items-center justify-center px-6 sm:px-14 lg:px-20 pt-20"
+              className="w-full md:w-screen min-h-screen md:h-screen flex-shrink-0 flex items-center justify-center px-6 sm:px-14 lg:px-20 pt-16 md:pt-20 pb-12"
             >
               <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+                {/* Image card with dark overlay to protect text */}
                 <div
                   onMouseEnter={() => {
                     setCursorActive(true);
@@ -898,63 +749,65 @@ export default function App() {
                       alt={p.title}
                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between text-xs font-mono">
-                      <span className="px-3 py-1 rounded-md bg-black/70 backdrop-blur-md text-emerald-400 border border-zinc-700/60">
+                      <span className="px-3 py-1 rounded-md bg-black/80 backdrop-blur-md text-emerald-400 border border-zinc-700/60 font-semibold">
                         {p.category}
                       </span>
-                      <span className="px-3 py-1 rounded-md bg-black/70 backdrop-blur-md text-zinc-300 border border-zinc-700/60">
+                      <span className="px-3 py-1 rounded-md bg-black/80 backdrop-blur-md text-zinc-200 border border-zinc-700/60">
                         {p.period}
                       </span>
                     </div>
-                    <div className="absolute top-5 left-5 text-6xl sm:text-7xl font-black font-mono text-white/10 select-none">
+                    <div className="absolute top-5 left-5 text-6xl sm:text-7xl font-black font-mono text-white/20 select-none">
                       {p.num}
                     </div>
                   </div>
                 </div>
 
+                {/* Info Card (T3: 1 línea + 3 métricas grandes) */}
                 <div className="lg:col-span-5 flex flex-col justify-center space-y-6">
                   <div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2">
+                    <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2 font-semibold">
                       <Briefcase className="w-3.5 h-3.5" />
                       <span>{p.company}</span>
                       <span>·</span>
-                      <span className="text-zinc-500">{p.role}</span>
+                      <span className="text-zinc-400">{p.role}</span>
                     </div>
                     <h3 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white leading-tight">
                       {p.title}
                     </h3>
                   </div>
 
-                  <p className="text-zinc-400 text-sm sm:text-base leading-relaxed font-light">
+                  <p className="text-zinc-200 text-base sm:text-lg leading-relaxed max-w-[65ch]">
                     {p.summary}
                   </p>
 
                   <div className="space-y-2">
                     {p.bulletPoints.map((bp, i) => (
-                      <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-300">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2.5 text-sm sm:text-base text-zinc-300">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
                         <span>{bp}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-1">
                     {p.tags.map((t) => (
                       <span
                         key={t}
-                        className="text-xs font-mono px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-300 hover:border-emerald-500/40 hover:text-white transition-colors"
+                        className="text-xs font-mono px-3 py-1 rounded-md bg-zinc-900 border border-zinc-700 text-zinc-200"
                       >
                         {t}
                       </span>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 pt-4 border-t border-zinc-800/80">
+                  {/* 3 Métricas Grandes (T3) */}
+                  <div className="grid grid-cols-3 gap-3 pt-4 border-t border-zinc-800">
                     {p.stats.map((s, idx) => (
-                      <div key={idx} className="p-2.5 rounded-lg bg-zinc-900/60 border border-zinc-800">
-                        <div className="text-[11px] font-mono text-zinc-500 uppercase">{s.label}</div>
-                        <div className="text-sm font-mono font-bold text-emerald-400 mt-0.5">{s.val}</div>
+                      <div key={idx} className="p-3 rounded-xl bg-black/50 border border-zinc-800 text-center">
+                        <div className="text-[11px] font-mono text-zinc-400 uppercase font-medium">{s.label}</div>
+                        <div className="text-base sm:text-lg font-mono font-black text-emerald-400 mt-1">{s.val}</div>
                       </div>
                     ))}
                   </div>
@@ -963,164 +816,129 @@ export default function App() {
             </div>
           ))}
         </div>
+      </section>
 
-        <div className="absolute bottom-6 right-8 hidden sm:flex items-center gap-2 text-xs font-mono text-zinc-500 pointer-events-none">
-          <span>DESPLÁZATE HACIA ABAJO PARA NAVEGAR</span>
-          <ArrowRight className="w-3.5 h-3.5 animate-pulse text-emerald-400" />
+      {/* ========================================================
+          6. EXPERIENCIA: Background #f5f5f5 (T2: Light Rhythm)
+          Dark text on light background
+          ======================================================== */}
+      <section
+        id="experiencia"
+        className="py-24 px-6 sm:px-12 bg-[#f5f5f5] text-[#1b1c1e] border-t border-zinc-300"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <span className="text-xs uppercase font-mono text-emerald-700 font-bold tracking-wider">
+                03 // TRAYECTORIA
+              </span>
+              <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-[#1b1c1e] mt-2">
+                Historial Profesional
+              </h2>
+            </div>
+            <p className="text-zinc-600 text-base max-w-md">
+              Evolución desde desarrollo fullstack hasta liderazgo de ingeniería frontend y arquitectura de sistemas complejos.
+            </p>
+          </div>
+
+          <div className="border-l-2 border-zinc-300 ml-3 sm:ml-6 pl-6 sm:pl-10 space-y-12">
+            {experienceHistory.map((item, idx) => (
+              <div key={idx} className="relative group">
+                <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-4 h-4 rounded-full bg-[#f5f5f5] border-2 border-zinc-400 group-hover:border-emerald-600 group-hover:scale-125 transition-all duration-300">
+                  <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full m-auto mt-[3px] opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <span className="text-xs font-mono font-bold text-emerald-800 px-2.5 py-0.5 rounded bg-emerald-100 border border-emerald-300">
+                    {item.period}
+                  </span>
+                  <span className="text-xs uppercase font-mono tracking-wider text-zinc-500 font-semibold">{item.badge}</span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-bold text-[#1b1c1e] mt-2">
+                  {item.role} <span className="text-zinc-600 font-normal">@ {item.company}</span>
+                </h3>
+
+                <p className="text-zinc-700 text-base leading-relaxed mt-2 max-w-[65ch]">
+                  {item.summary}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 p-6 sm:p-8 rounded-2xl bg-white border border-zinc-300 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700">
+                <GraduationCap className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="text-xs uppercase font-mono text-emerald-800 font-bold">Educación Formal</div>
+                <div className="text-lg font-bold text-[#1b1c1e]">Técnico Superior en Programación</div>
+                <div className="text-sm text-zinc-600">Universidad Tecnológica Nacional (UTN) — Córdoba, Argentina</div>
+              </div>
+            </div>
+            <span className="text-xs font-mono text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-300 font-semibold">
+              2014 — 2016 · Algoritmos & Bases de Datos
+            </span>
+          </div>
         </div>
       </section>
 
       {/* ========================================================
-          EXPERIENCE TIMELINE SECTION
+          7. SKILLS: Background #0d0e12
+          T2: Dark section after light experience
           ======================================================== */}
-      <section id="experiencia" className="py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-zinc-800/80">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div>
-            <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">04 // TRAYECTORIA</span>
-            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-2">
-              Historial Profesional
-            </h2>
-          </div>
-          <p className="text-zinc-400 text-sm max-w-md font-light">
-            Evolución desde desarrollo fullstack clásico hasta liderazgo de ingeniería frontend y arquitectura de sistemas complejos.
-          </p>
-        </div>
-
-        <div className="border-l-2 border-zinc-800 ml-3 sm:ml-6 pl-6 sm:pl-10 space-y-12">
-          {experienceHistory.map((item, idx) => (
-            <div key={idx} className="relative group">
-              <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-4 h-4 rounded-full bg-[#070709] border-2 border-zinc-700 group-hover:border-emerald-400 group-hover:scale-125 transition-all duration-300">
-                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full m-auto mt-[3px] opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-
-              <div className="flex flex-wrap items-baseline gap-3">
-                <span className="text-xs font-mono font-semibold text-emerald-400 px-2.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
-                  {item.period}
-                </span>
-                <span className="text-xs uppercase font-mono tracking-wider text-zinc-500">{item.badge}</span>
-              </div>
-
-              <h3 className="text-xl sm:text-2xl font-bold text-white mt-2 group-hover:text-emerald-300 transition-colors">
-                {item.role} <span className="text-zinc-500 font-normal">@ {item.company}</span>
-              </h3>
-
-              <p className="text-zinc-400 text-sm sm:text-base font-light mt-2 max-w-3xl leading-relaxed">
-                {item.summary}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-16 p-6 sm:p-8 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <GraduationCap className="w-6 h-6" />
-            </div>
+      <section id="skills" className="py-24 px-6 sm:px-12 bg-[#0d0e12] text-zinc-100 border-t border-zinc-800/80">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div>
-              <div className="text-xs uppercase font-mono text-emerald-400">Educación Formal</div>
-              <div className="text-lg font-bold text-white">Técnico Superior en Programación</div>
-              <div className="text-xs text-zinc-400">Universidad Tecnológica Nacional (UTN) — Córdoba, Argentina</div>
+              <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">04 // CAPACIDADES</span>
+              <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-2">
+                Arsenal Tecnológico
+              </h2>
             </div>
-          </div>
-          <span className="text-xs font-mono text-zinc-500 bg-zinc-800/60 px-3 py-1.5 rounded-lg border border-zinc-700/50">
-            2014 — 2016 · Algoritmos & Bases de Datos
-          </span>
-        </div>
-      </section>
-
-      {/* SKILLS SECTION */}
-      <section id="skills" className="py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-zinc-800/80">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div>
-            <span className="text-xs uppercase font-mono text-emerald-400 tracking-wider">05 // CAPACIDADES</span>
-            <h2 className="text-4xl sm:text-6xl font-black uppercase tracking-tight text-white mt-2">
-              Arsenal Tecnológico
-            </h2>
-          </div>
-          <p className="text-zinc-400 text-sm max-w-md font-light">
-            Especialización en React, arquitecturas escalables, diseño de APIs y flujos agénticos con IA.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {skillGroups.map((group, idx) => (
-            <div
-              key={idx}
-              className="p-7 rounded-2xl bg-zinc-900/40 border border-zinc-800 hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-            >
-              <div className="w-10 h-10 rounded-lg bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400">
-                {idx === 0 && <Code2 className="w-5 h-5" />}
-                {idx === 1 && <Layers className="w-5 h-5" />}
-                {idx === 2 && <Cpu className="w-5 h-5" />}
-                {idx === 3 && <Terminal className="w-5 h-5" />}
-              </div>
-              <h3 className="text-lg font-bold text-white mb-4">{group.title}</h3>
-              <ul className="space-y-2.5">
-                {group.skills.map((s, i) => (
-                  <li key={i} className="text-xs sm:text-sm font-mono text-zinc-400 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
-                    <span>{s}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* AI MANIFESTO */}
-      <section className="py-24 px-6 sm:px-12 max-w-7xl mx-auto">
-        <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-br from-zinc-900 via-[#0d1114] to-[#07090b] border border-emerald-500/30 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="max-w-3xl relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono mb-6">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>METODOLOGÍA DE INGENIERÍA 2026+</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase leading-tight">
-              Desarrollo acelerado por IA sin comprometer calidad ni arquitectura.
-            </h2>
-
-            <p className="mt-6 text-zinc-300 text-base sm:text-lg font-light leading-relaxed">
-              Integro <span className="text-emerald-400 font-mono font-medium">Claude</span>,{' '}
-              <span className="text-emerald-400 font-mono font-medium">Claude Code</span> y{' '}
-              <span className="text-emerald-400 font-mono font-medium">MCP (Model Context Protocol)</span> directamente
-              en el ciclo de vida del software. Esto potencia la velocidad de iteración, la exhaustividad en pruebas unitarias y la precisión en contratos de datos.
+            <p className="text-zinc-300 text-base max-w-md">
+              Especialización en React, arquitecturas escalables, diseño de APIs y flujos agénticos con IA.
             </p>
+          </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-10 pt-8 border-t border-zinc-800">
-              <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/80">
-                <div className="text-emerald-400 font-mono font-bold text-sm">Automated Refactors</div>
-                <div className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                  Análisis estático asistido, tipado estricto y migración de código sin fricción.
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {skillGroups.map((group, idx) => (
+              <div
+                key={idx}
+                className="p-7 rounded-2xl bg-black/40 border border-zinc-800 hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+              >
+                <div className="w-10 h-10 rounded-lg bg-emerald-950/40 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400">
+                  {idx === 0 && <Code2 className="w-5 h-5" />}
+                  {idx === 1 && <Layers className="w-5 h-5" />}
+                  {idx === 2 && <Cpu className="w-5 h-5" />}
+                  {idx === 3 && <Terminal className="w-5 h-5" />}
                 </div>
+                <h3 className="text-lg font-bold text-white mb-4">{group.title}</h3>
+                <ul className="space-y-2.5">
+                  {group.skills.map((s, i) => (
+                    <li key={i} className="text-sm font-mono text-zinc-300 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/80" />
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/80">
-                <div className="text-emerald-400 font-mono font-bold text-sm">Model Context Protocol</div>
-                <div className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                  Servidores MCP para interactuar con bases de datos y tooling local.
-                </div>
-              </div>
-              <div className="p-4 rounded-xl bg-black/40 border border-zinc-800/80">
-                <div className="text-emerald-400 font-mono font-bold text-sm">Clean Architecture</div>
-                <div className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                  Revisión estricta de componentes, accesibilidad y Core Web Vitals.
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FOOTER & CONTACT */}
-      <footer id="contacto" className="border-t border-zinc-800 bg-[#050507] pt-24 pb-16 px-6 sm:px-12">
+      {/* ========================================================
+          8. FOOTER: Background #000000
+          Clean finish, high contrast
+          ======================================================== */}
+      <footer id="contacto" className="border-t border-zinc-800 bg-[#000000] pt-24 pb-16 px-6 sm:px-12">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 pb-16 border-b border-zinc-800/80">
             <div>
               <span className="text-xs font-mono uppercase text-emerald-400 tracking-wider">¿Hablamos de tu próximo desafío?</span>
-              <h2 className="text-4xl sm:text-7xl font-black uppercase tracking-tighter text-white mt-3">
+              <h2 className="text-4xl sm:text-7xl font-black uppercase tracking-tighter text-white mt-3 [text-wrap:balance]">
                 Creemos algo <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-white">
                   extraordinario.
@@ -1139,10 +957,10 @@ export default function App() {
                   setCursorActive(false);
                   setCursorText('');
                 }}
-                className="group flex items-center justify-between gap-6 px-8 py-5 rounded-2xl bg-zinc-900 border border-zinc-700/80 hover:border-emerald-500 hover:bg-zinc-850 transition-all cursor-pointer shadow-xl active:scale-95"
+                className="group flex items-center justify-between gap-6 px-8 py-5 rounded-2xl bg-zinc-900 border border-zinc-700 hover:border-emerald-500 hover:bg-zinc-850 transition-all cursor-pointer shadow-xl active:scale-95"
               >
                 <div className="text-left">
-                  <div className="text-xs uppercase font-mono text-zinc-400">Email Directo</div>
+                  <div className="text-xs uppercase font-mono text-zinc-300 font-semibold">Email Directo</div>
                   <div className="text-lg sm:text-xl font-bold font-mono text-white group-hover:text-emerald-400 transition-colors">
                     vruno182@gmail.com
                   </div>
@@ -1152,7 +970,7 @@ export default function App() {
                 </div>
               </button>
 
-              <div className="flex items-center gap-4 text-xs font-mono text-zinc-400">
+              <div className="flex items-center gap-4 text-xs font-mono text-zinc-300">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Córdoba, Argentina</span>
@@ -1166,7 +984,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="pt-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono text-zinc-500">
+          <div className="pt-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono text-zinc-400">
             <div>
               © {new Date().getFullYear()} Bruno Villavicencio — Portfolio Web & Experiencia Interactiva.
             </div>
